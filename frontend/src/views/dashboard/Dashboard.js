@@ -3,6 +3,10 @@ import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import geoJSON from 'src/assets/json/UMG.json'
 import axios from 'axios'
+import { MuiPickersUtilsProvider } from '@material-ui/pickers'
+import { TimePicker } from '@material-ui/pickers'
+import DateFnsUtils from '@date-io/date-fns'
+import esLocale from 'date-fns/locale/es'
 
 import {
   CAvatar,
@@ -16,6 +20,7 @@ import {
   CProgress,
   CRow,
   CTable,
+  CWidgetStatsB,
   CTableBody,
   CTableDataCell,
   CTableHead,
@@ -54,6 +59,7 @@ import avatar3 from 'src/assets/images/avatars/3.jpg'
 import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
+import student from 'src/assets/images/user/student.jpg'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
@@ -182,19 +188,60 @@ const Dashboard = () => {
     },
   ]
   const [onselect, setOnselect] = useState({})
+  const [onselect2, setOnselect2] = useState({})
+  const [user, setUser] = useState([])
+  const [userData, setUserData] = useState([])
+  const [records, setRecords] = useState([])
+  const [userLocated, setUserLocated] = useState([])
+  const [search, setSearch] = useState('')
   const tileURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 
+  useEffect(() => {
+    const loadRec = async () => {
+      await axios
+        .get('/api/records/lastlocation')
+        .then((res) => {
+          setUser(res.data)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+    loadRec()
+  }, [])
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      await axios
+        .get('/api/users')
+        .then((res) => {
+          setUserData(res.data)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+    loadUsers()
+  }, [])
+
+  useEffect(() => {
+    const loadRecords = async () => {
+      await axios
+        .get('/api/records/filter')
+        .then((res) => {
+          setRecords(res.data)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+    loadRecords()
+  }, [])
+
   const highlightFeature = (e) => {
-    var layer = e.target
-    const { name, users } = e.target.feature.properties
+    const { name } = e.target.feature.properties
     setOnselect({
       name: name,
-      users: users,
-    })
-    layer.setStyle({
-      weight: 2,
-      color: 'black',
-      fillOpacity: 1,
     })
   }
 
@@ -232,143 +279,264 @@ const Dashboard = () => {
       fillOpacity: getOpacity(e.properties),
     }
   }
-  const [user, setUser] = useState([])
-  const [data, setData] = useState([])
-  const [records, setRecords] = useState([{ records: '' }])
-  const [openModalDetails, setOpenModalDetails] = useState(false)
-  const [search, setSearch] = useState('')
-  useEffect(() => {
-    const loadUsers = async () => {
-      await axios
-        .get('/api/records/filter')
-        .then((res) => {
-          setUser(res.data)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    }
-    loadUsers()
-  }, [])
 
-  const onSelected = (users) => {
-    let records = []
-
-    user.forEach((userid) => {
-      if (userid.userID === users[0]) {
-        if (userid.records === '') {
-        }
-        records.push(userid.records)
+  const getCount = (place) => {
+    let count = 0
+    user.forEach((userR) => {
+      console.log(place)
+      if (userR.records.recordInPlace === place) {
+        count++
       }
     })
-    setRecords(records)
-    setData(users)
+    if (place === 'UMG') {
+      count++
+    }
+    return count
   }
 
   return (
     <>
-      <WidgetsDropdown />
-
-      <CRow>
-        <CCol lg={2}>
-          <div className="userList">
-            <div className="cont-wrapper">
-              <h5 className="userText">Usuarios</h5>
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className="form-control searchUser"
-                maxLength="10"
-                minLength="4"
-                onChange={(e) => {
-                  setSearch(e.target.value)
-                }}
-              />
-              {user
-                .filter((val) => {
-                  if (search === '' || val.userID.toLowerCase().includes(search.toLowerCase())) {
-                    return val
-                  } else {
-                    return null
-                  }
-                })
-                .map((list, key) => {
-                  return (
-                    <div
-                      className="userItem"
-                      key={key}
-                      onClick={() => {
-                        onSelected([
-                          list.userID,
-                          list.userRol,
-                          list.checkInPlace,
-                          list.checkInTime,
-                          list.checkOutPlace,
-                          list.checkOutTime,
-                          list.records[0].recordInPlace,
-                          list.records[0].recordInTime,
-                          list.records[0].recordOutTime,
-                        ])
-                        setOpenModalDetails(true)
-                      }}
-                      value={list.userID}
-                      name={user.userID}
-                    >
-                      {list.userID}
-                    </div>
-                  )
-                })}
-
-              {/* {openModalDetails && (
-                <UserDetail
-                  onSelected={data}
-                  userRecords={records}
-                  closeModalDetails={setOpenModalDetails}
-                />
-              )} */}
-            </div>
-          </div>
-        </CCol>
-
-        <CCol>
-          <div className="mapView">
-            <div className="cont-wrapper">
+      <CCard className="mb-2">
+        <CCardBody>
+          <CRow>
+            <CCol xs={12} md={6} xl={10}>
               {onselect.name && (
-                <ul className="locationInfo">
-                  <li className="locationName">
+                <div className="locationInfo">
+                  <div className="locationName">
                     <strong>{onselect.name}</strong>
-                  </li>
-                  <br />
-                  {user &&
-                    user.map((data, index) => {
-                      return (
-                        <div className="locationUsers" key={index}>
-                          {data.records[data.records.length - 1].recordInPlace === '' ? (
-                            data.checkInPlace === onselect.name ? (
-                              <li>{data.userID}</li>
-                            ) : (
-                              <li></li>
-                            )
-                          ) : data.records[data.records.length - 1].recordInPlace ===
-                            onselect.name ? (
-                            <li>{data.userID}</li>
-                          ) : (
-                            <li></li>
-                          )}
-                        </div>
-                      )
-                    })}
-                </ul>
+                    <hr className="mt-0 mt-2" />
+                  </div>
+
+                  {user.map((item) =>
+                    item.records.recordInPlace === onselect.name ? (
+                      <div
+                        className="locationUsers"
+                        onClick={() => {
+                          setOnselect2({ name: item.userID })
+                        }}
+                      >
+                        {item.userID}
+                      </div>
+                    ) : (
+                      <></>
+                    ),
+                  )}
+                </div>
               )}
-              <MapContainer center={{ lng: '-103.40816076', lat: '20.63412074' }} zoom={20}>
+              {onselect2.name && (
+                <div className="userInfo">
+                  {userData.map((data) => {
+                    return onselect2.name === data.userID ? (
+                      <div className="userDetails">
+                        <CRow>
+                          <CCol lg={2}>
+                            <i className="fa fa-graduation-cap fa-3x m-2" aria-hidden="true"></i>
+                          </CCol>
+                          <CCol lg="auto">
+                            <div className="userName ms-2">
+                              <p>{data.userID}</p>
+                              <p>
+                                {data.name} {data.lastname}
+                              </p>
+                              <p>{data.email}</p>
+                            </div>
+                          </CCol>
+                        </CRow>
+                        <CRow>
+                          <CCol>
+                            <div className="allRecords">
+                              {records.map((record, index) => {
+                                return record.userID === data.userID ? (
+                                  <div className="records" key={index}>
+                                    <h6>Entrada</h6>
+                                    <CRow>
+                                      <CCol lg={6}>
+                                        <p>{record.checkInPlace}</p>
+                                      </CCol>
+                                      <MuiPickersUtilsProvider
+                                        utils={DateFnsUtils}
+                                        locale={esLocale}
+                                      >
+                                        <CCol lg="auto">
+                                          <TimePicker
+                                            className="dateCheckIn"
+                                            name="checkInTime"
+                                            value={new Date(record.checkInTime)}
+                                            views="year"
+                                          />
+                                        </CCol>
+                                      </MuiPickersUtilsProvider>
+                                    </CRow>
+                                    <h6>Historial</h6>
+                                    {record.records.map((item, i) => {
+                                      return record.records[i].recordInPlace !== null ? (
+                                        item.recordInPlace !== null ? (
+                                          <CRow>
+                                            <CCol lg={6}>
+                                              <p>{record.records[i].recordInPlace}</p>
+                                            </CCol>
+                                            <MuiPickersUtilsProvider
+                                              utils={DateFnsUtils}
+                                              locale={esLocale}
+                                            >
+                                              <CCol>
+                                                <TimePicker
+                                                  name="recordInTime"
+                                                  value={new Date(record.records[i].recordInTime)}
+                                                  readOnly={true}
+                                                />
+                                              </CCol>
+                                              -
+                                              {record.records[i].recordOutTime !== null ? (
+                                                <CCol>
+                                                  <TimePicker
+                                                    id="checkOutTime"
+                                                    name="recordOutTime"
+                                                    value={
+                                                      new Date(record.records[i].recordOutTime)
+                                                    }
+                                                    readOnly={true}
+                                                  />
+                                                </CCol>
+                                              ) : (
+                                                <></>
+                                              )}
+                                            </MuiPickersUtilsProvider>
+                                          </CRow>
+                                        ) : (
+                                          <></>
+                                        )
+                                      ) : (
+                                        <></>
+                                      )
+                                    })}
+
+                                    <CRow>
+                                      <CCol>{}</CCol>
+                                    </CRow>
+                                  </div>
+                                ) : (
+                                  <></>
+                                )
+                              })}
+                            </div>
+                          </CCol>
+                        </CRow>
+                      </div>
+                    ) : (
+                      <></>
+                    )
+                  })}
+                </div>
+              )}
+              <MapContainer center={{ lng: '-103.40838776', lat: '20.63412074' }} zoom={18}>
                 <TileLayer
                   url={tileURL}
                   attribution='© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 />
                 <GeoJSON style={featureStyle} data={geoJSON} onEachFeature={onEachLocation} />
               </MapContainer>
-            </div>
-          </div>
+            </CCol>
+
+            <CCol xs={4} md={6} xl={2}>
+              <CCard className="mb-2">
+                <CCardBody>
+                  <div className="userText">
+                    <h2>{records.length}</h2> <p className="userTextLabel">Usuarios</p>
+                  </div>
+
+                  {geoJSON.features.map((list, key) => {
+                    return (
+                      <div
+                        className="userItem mb-3"
+                        key={key}
+                        onClick={() => {
+                          setOnselect({ name: list.properties.name })
+                        }}
+                      >
+                        {list.properties.type === 'Entrada/Salida' ? (
+                          <></>
+                        ) : (
+                          <div className="userItemLoc mt-3">
+                            {list.properties.name}
+                            <span className="float-end">{getCount(list.properties.name)}</span>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </CCardBody>
+              </CCard>
+            </CCol>
+          </CRow>
+        </CCardBody>
+      </CCard>
+      <CRow>
+        <CCol sm={6} lg={8}>
+          <CCard className="mb-4">
+            <CCardBody>
+              <h5 className="card-title mb-2">Estadistica de usuarios</h5>
+              <hr className="mt-0" />
+              <CRow>
+                <CCol sm={6} lg={4}>
+                  <CWidgetStatsB
+                    className="mb-1"
+                    color="info"
+                    inverse
+                    progress={{ value: 100 }}
+                    title="Alumnos"
+                    value={user.length}
+                  />
+                </CCol>
+                <CCol sm={6} lg={4}>
+                  <CWidgetStatsB
+                    className="mb-1"
+                    color="info"
+                    inverse
+                    progress={{ value: 100 }}
+                    title="Maestros"
+                    value={user.length}
+                  />
+                </CCol>
+                <CCol sm={6} lg={4}>
+                  <CWidgetStatsB
+                    className="mb-1"
+                    color="info"
+                    inverse
+                    progress={{ value: 100 }}
+                    title="Invitados"
+                    value={user.length}
+                  />
+                </CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol sm={6} lg={4}>
+          <CCard className="mb-4">
+            <CCardBody>
+              <h5 className="card-title mb-2">Entradas</h5>
+              <hr className="mt-0" />
+              <CRow>
+                <CCol sm={10}>
+                  <p>Puerta Principal</p>
+                </CCol>
+                <CCol>10</CCol>
+              </CRow>
+              <CRow>
+                <CCol sm={10}>
+                  <p>C. Montemorelos</p>
+                </CCol>
+                <CCol>10</CCol>
+              </CRow>
+              <CRow>
+                <CCol sm={10}>
+                  <p>Residencias</p>
+                </CCol>
+                <CCol>10</CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
         </CCol>
       </CRow>
 
@@ -500,6 +668,7 @@ const Dashboard = () => {
       </CCard>
 
       <WidgetsBrand withCharts />
+      <WidgetsDropdown />
 
       <CRow>
         <CCol xs>

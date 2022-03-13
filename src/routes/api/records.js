@@ -17,13 +17,16 @@ router.get('/filter', (req, res) => {
 		.then((users) => res.json(users));
 });
 
-router.get('/filter/records', (req, res) => {
+router.get('/lastlocation', (req, res) => {
 	records = [];
-	Record.find().then((users) => {
+	Record.find({
+		checkOutTime: '',
+	}).then((users) => {
 		users.forEach((user) => {
-			if (user.records != '') {
-				records.push({ userID: user.userID, records: user.records });
-			}
+			records.push({
+				userID: user.userID,
+				records: user.records[user.records.length - 1],
+			});
 		});
 		res.json(records);
 	});

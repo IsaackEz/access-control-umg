@@ -23,7 +23,7 @@ const AppHeader = () => {
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
   return (
-    <CHeader position="sticky" className="mb-4">
+    <CHeader position="sticky" className="mb-2">
       <CContainer fluid>
         <CHeaderToggler
           className="ps-1"
