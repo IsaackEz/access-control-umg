@@ -1,20 +1,15 @@
+* {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+}
 .mapView {
   z-index: 1;
   padding-bottom: 20px;
 }
-
-.cont-wrapper {
-  padding: 20px;
-  background-color: var(--cui-card-bg, #fff);
-  border-radius: 0.25rem;
-  border: 1px solid var(--cui-card-border-color, rgba(0, 0, 21, 0.125));
-  min-width: 0;
-  height: 60vh;
-}
 .leaflet-container {
   min-width: 0;
   min-height: 10vh;
-  height: 62vh;
+  height: 56vh;
   border-radius: 0.25rem;
 }
 
@@ -27,8 +22,15 @@
   border-bottom: 1px solid var(--cui-card-border-color, rgba(0, 0, 21, 0.125));
 }
 
+.nUsers {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 900;
+}
 .userTextLabel {
   margin-bottom: 0;
+}
+.nUserLocation {
+  color: rgb(161, 161, 161);
 }
 
 .searchUser {
@@ -43,12 +45,12 @@
   margin-right: auto;
   border-radius: 5px;
   color: rgb(34, 34, 34);
-  letter-spacing: 2px;
+  letter-spacing: 0.5px;
   background: rgba(255, 255, 255, 0.979);
   padding: 0;
   list-style: none;
   width: 13vh;
-  height: 62vh;
+  height: 56vh;
   font-size: 14px;
   position: absolute;
   z-index: 999;
@@ -59,11 +61,11 @@
   margin-right: auto;
   border-radius: 5px;
   color: rgb(34, 34, 34);
-  letter-spacing: 2px;
+  letter-spacing: 0.5px;
   background: rgba(255, 255, 255, 0.979);
-  padding: 0;
+  padding: 5px 10px 10px 10px;
   list-style: none;
-  width: 35vh;
+  width: 45vh;
   height: auto;
   font-size: 14px;
   position: absolute;
@@ -74,18 +76,25 @@
   padding-top: 5px;
   padding-left: 5px;
   padding-right: 5px;
-  font-size: 12px;
+  font-size: 15px;
   text-align: center;
 }
 .locationUsers {
   cursor: pointer;
+  font-size: 17px;
+  border-bottom: 1px solid var(--cui-card-border-color, rgba(0, 0, 21, 0.125));
 }
+
+.locationUsers:hover {
+  background-color: rgba(153, 153, 153, 0.151);
+}
+
 .userItem {
   cursor: pointer;
 }
 
 .userName {
-  font-size: 10px;
+  font-size: 14px;
 }
 .userName p {
   margin: 0;
@@ -104,4 +113,35 @@
   .userList {
     display: none;
   }
+}
+
+.form-control.searchUser {
+  width: 85%;
+  height: 30px;
+  padding-left: 9px;
+  padding-right: 9px;
+  margin: 0;
+  margin-bottom: 8px;
+}
+
+.statusIna {
+  height: 7px;
+  width: 7px;
+  margin-left: 5px;
+  background-color: red;
+  border-radius: 50%;
+  display: inline-block;
+}
+.statusAct {
+  height: 7px;
+  width: 7px;
+  margin-left: 5px;
+  background-color: rgb(48, 206, 0);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.imgUser {
+  width: 130%;
+  height: 100%;
 }

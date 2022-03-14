@@ -59,7 +59,10 @@ import avatar3 from 'src/assets/images/avatars/3.jpg'
 import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
-import student from 'src/assets/images/user/student.jpg'
+import student from 'src/assets/images/user/student.png'
+import teacher from 'src/assets/images/user/teacher.png'
+import guest from 'src/assets/images/user/guest.png'
+import foreign from 'src/assets/images/user/foreign.png'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
@@ -192,7 +195,6 @@ const Dashboard = () => {
   const [user, setUser] = useState([])
   const [userData, setUserData] = useState([])
   const [records, setRecords] = useState([])
-  const [userLocated, setUserLocated] = useState([])
   const [search, setSearch] = useState('')
   const tileURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 
@@ -283,14 +285,16 @@ const Dashboard = () => {
   const getCount = (place) => {
     let count = 0
     user.forEach((userR) => {
-      console.log(place)
-      if (userR.records.recordInPlace === place) {
+      if (userR.records.recordInPlace === place && userR.records.recordOutTime === null) {
+        count++
+      } else if (
+        place === 'UMG' &&
+        (userR.records.recordOutTime !== null || userR.records.recordInPlace === '')
+      ) {
         count++
       }
     })
-    if (place === 'UMG') {
-      count++
-    }
+
     return count
   }
 
@@ -298,8 +302,10 @@ const Dashboard = () => {
     <>
       <CCard className="mb-2">
         <CCardBody>
+          <h5 className="card-title mb-2">Mapa</h5>
+          <hr className="mt-0" />
           <CRow>
-            <CCol xs={12} md={6} xl={10}>
+            <CCol lg={10}>
               {onselect.name && (
                 <div className="locationInfo">
                   <div className="locationName">
@@ -307,20 +313,53 @@ const Dashboard = () => {
                     <hr className="mt-0 mt-2" />
                   </div>
 
-                  {user.map((item) =>
-                    item.records.recordInPlace === onselect.name ? (
-                      <div
-                        className="locationUsers"
-                        onClick={() => {
-                          setOnselect2({ name: item.userID })
-                        }}
-                      >
-                        {item.userID}
-                      </div>
-                    ) : (
-                      <></>
-                    ),
-                  )}
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="form-control searchUser"
+                    maxLength="10"
+                    minLength="4"
+                    onChange={(e) => {
+                      setSearch(e.target.value)
+                    }}
+                  />
+                  {user
+                    .filter((val) => {
+                      if (
+                        search === '' ||
+                        val.userID.toLowerCase().includes(search.toLowerCase())
+                      ) {
+                        return val
+                      } else {
+                        return null
+                      }
+                    })
+                    .map((item) =>
+                      item.records.recordInPlace === onselect.name &&
+                      item.records.recordOutTime === null ? (
+                        <div
+                          className="locationUsers"
+                          onClick={() => {
+                            setOnselect2({ name: item.userID })
+                          }}
+                        >
+                          {item.userID}
+                        </div>
+                      ) : onselect.name === 'UMG' &&
+                        (item.records.recordOutTime !== null ||
+                          item.records.recordInPlace === '') ? (
+                        <div
+                          className="locationUsers"
+                          onClick={() => {
+                            setOnselect2({ name: item.userID })
+                          }}
+                        >
+                          {item.userID}
+                        </div>
+                      ) : (
+                        <></>
+                      ),
+                    )}
                 </div>
               )}
               {onselect2.name && (
@@ -330,15 +369,33 @@ const Dashboard = () => {
                       <div className="userDetails">
                         <CRow>
                           <CCol lg={2}>
-                            <i className="fa fa-graduation-cap fa-3x m-2" aria-hidden="true"></i>
+                            {console.log(data.userRol)}
+                            {data.userRol === 'Alumno' ? (
+                              <img className="imgUser" src={student} alt="" />
+                            ) : data.userRol === 'Maestro' ? (
+                              <img className="imgUser" src={teacher} alt="" />
+                            ) : data.userRol === 'Residente' ? (
+                              <img className="imgUser" src={foreign} alt="" />
+                            ) : data.userRol === 'Invitado' ? (
+                              <img className="imgUser" src={guest} alt="" />
+                            ) : (
+                              <></>
+                            )}
                           </CCol>
                           <CCol lg="auto">
                             <div className="userName ms-2">
-                              <p>{data.userID}</p>
+                              <p>
+                                <strong>{data.userID}</strong>
+                                {data.covid === true ? (
+                                  <span className="statusIna"></span>
+                                ) : (
+                                  <span className="statusAct"></span>
+                                )}
+                              </p>
                               <p>
                                 {data.name} {data.lastname}
                               </p>
-                              <p>{data.email}</p>
+                              <p>{data.email.toLowerCase()}</p>
                             </div>
                           </CCol>
                         </CRow>
@@ -348,9 +405,9 @@ const Dashboard = () => {
                               {records.map((record, index) => {
                                 return record.userID === data.userID ? (
                                   <div className="records" key={index}>
-                                    <h6>Entrada</h6>
+                                    <strong>Entrada</strong>
                                     <CRow>
-                                      <CCol lg={6}>
+                                      <CCol lg={4}>
                                         <p>{record.checkInPlace}</p>
                                       </CCol>
                                       <MuiPickersUtilsProvider
@@ -367,28 +424,33 @@ const Dashboard = () => {
                                         </CCol>
                                       </MuiPickersUtilsProvider>
                                     </CRow>
-                                    <h6>Historial</h6>
+                                    <strong>Historial</strong>
                                     {record.records.map((item, i) => {
-                                      return record.records[i].recordInPlace !== null ? (
+                                      return record.records[i].recordInPlace !== '' ? (
                                         item.recordInPlace !== null ? (
                                           <CRow>
-                                            <CCol lg={6}>
+                                            <CCol lg={4}>
                                               <p>{record.records[i].recordInPlace}</p>
                                             </CCol>
                                             <MuiPickersUtilsProvider
                                               utils={DateFnsUtils}
                                               locale={esLocale}
                                             >
-                                              <CCol>
+                                              <CCol lg="auto">
                                                 <TimePicker
                                                   name="recordInTime"
                                                   value={new Date(record.records[i].recordInTime)}
                                                   readOnly={true}
                                                 />
                                               </CCol>
-                                              -
-                                              {record.records[i].recordOutTime !== null ? (
-                                                <CCol>
+                                            </MuiPickersUtilsProvider>
+                                            {record.records[i].recordOutTime !== null ? (
+                                              <MuiPickersUtilsProvider
+                                                utils={DateFnsUtils}
+                                                locale={esLocale}
+                                              >
+                                                -
+                                                <CCol lg="auto">
                                                   <TimePicker
                                                     id="checkOutTime"
                                                     name="recordOutTime"
@@ -398,22 +460,18 @@ const Dashboard = () => {
                                                     readOnly={true}
                                                   />
                                                 </CCol>
-                                              ) : (
-                                                <></>
-                                              )}
-                                            </MuiPickersUtilsProvider>
+                                              </MuiPickersUtilsProvider>
+                                            ) : (
+                                              <></>
+                                            )}
                                           </CRow>
                                         ) : (
                                           <></>
                                         )
                                       ) : (
-                                        <></>
+                                        <h6>No hay historial</h6>
                                       )
                                     })}
-
-                                    <CRow>
-                                      <CCol>{}</CCol>
-                                    </CRow>
                                   </div>
                                 ) : (
                                   <></>
@@ -438,11 +496,14 @@ const Dashboard = () => {
               </MapContainer>
             </CCol>
 
-            <CCol xs={4} md={6} xl={2}>
-              <CCard className="mb-2">
+            <CCol lg={2}>
+              <CCard className="userList mb-2">
                 <CCardBody>
                   <div className="userText">
-                    <h2>{records.length}</h2> <p className="userTextLabel">Usuarios</p>
+                    <h2 className="nUsers">
+                      <strong>{records.length}</strong>
+                    </h2>{' '}
+                    <p className="userTextLabel">Usuarios</p>
                   </div>
 
                   {geoJSON.features.map((list, key) => {
@@ -459,7 +520,9 @@ const Dashboard = () => {
                         ) : (
                           <div className="userItemLoc mt-3">
                             {list.properties.name}
-                            <span className="float-end">{getCount(list.properties.name)}</span>
+                            <span className="nUserLocation float-end">
+                              {getCount(list.properties.name)}
+                            </span>
                           </div>
                         )}
                       </div>
