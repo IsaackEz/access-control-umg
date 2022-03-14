@@ -49,7 +49,7 @@
   background: rgba(255, 255, 255, 0.979);
   padding: 0;
   list-style: none;
-  width: 13vh;
+  width: 7rem;
   height: 56vh;
   font-size: 14px;
   position: absolute;
@@ -57,7 +57,7 @@
   box-shadow: 0 0 5px 0 rgba(153, 153, 153, 0.151);
 }
 .userInfo {
-  margin-left: 13vh;
+  margin-left: 7rem;
   margin-right: auto;
   border-radius: 5px;
   color: rgb(34, 34, 34);
@@ -65,7 +65,7 @@
   background: rgba(255, 255, 255, 0.979);
   padding: 5px 10px 10px 10px;
   list-style: none;
-  width: 45vh;
+  width: 25rem;
   height: auto;
   font-size: 14px;
   position: absolute;
@@ -111,6 +111,12 @@
 }
 @media (max-width: 990px) {
   .userList {
+    display: none;
+  }
+  .userInfo {
+    display: none;
+  }
+  .locationInfo {
     display: none;
   }
 }
