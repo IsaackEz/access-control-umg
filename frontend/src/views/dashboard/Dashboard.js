@@ -420,6 +420,7 @@ const Dashboard = () => {
                                             name="checkInTime"
                                             value={new Date(record.checkInTime)}
                                             views="year"
+                                            readOnly={true}
                                           />
                                         </CCol>
                                       </MuiPickersUtilsProvider>

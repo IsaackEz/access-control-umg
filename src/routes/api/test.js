@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-	const newTest = new User({
+	const newTest = new Test({
 		userID: req.body.userID,
 		time: req.body.time,
 	});

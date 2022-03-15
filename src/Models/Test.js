@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const TestSchema = new Schema(
 	{
-		userID: { type: String, required: true, unique: true, trim: true },
+		userID: { type: String, trim: true },
 		time: { type: String, trim: true },
 	},
 	{ timestamps: true }
