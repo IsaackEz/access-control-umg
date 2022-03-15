@@ -2,6 +2,35 @@
   font-family: 'Roboto', sans-serif;
   font-weight: 300;
 }
+@media (max-width: 990px) {
+  .userList {
+    display: none;
+  }
+  .userInfo {
+    display: none;
+  }
+  .locationInfo {
+    display: none;
+  }
+}
+@media (min-width: 760px) {
+  .user-stats {
+    width: 70%;
+  }
+  .in-out {
+    width: 30%;
+  }
+}
+
+@media (min-width: 1030px) {
+  .user-stats {
+    width: 70%;
+  }
+  .in-out {
+    width: 30%;
+  }
+}
+
 .mapView {
   z-index: 1;
   padding-bottom: 20px;
@@ -55,6 +84,8 @@
   position: absolute;
   z-index: 999;
   box-shadow: 0 0 5px 0 rgba(153, 153, 153, 0.151);
+  overflow: auto;
+  scrollbar-width: none;
 }
 .userInfo {
   margin-left: 7rem;
@@ -82,9 +113,15 @@
 .locationUsers {
   cursor: pointer;
   font-size: 17px;
+  margin: 5px;
   border-bottom: 1px solid var(--cui-card-border-color, rgba(0, 0, 21, 0.125));
 }
-
+.locationHeader {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  align-items: center;
+}
 .locationUsers:hover {
   background-color: rgba(153, 153, 153, 0.151);
 }
@@ -99,26 +136,13 @@
 .userName p {
   margin: 0;
 }
-.studentImg {
-  width: 100%;
-}
+
 .dateCheckIn {
   size: 12px;
 }
 .MuiInputBase-root {
   font-size: 12px !important;
   max-width: 55px;
-}
-@media (max-width: 990px) {
-  .userList {
-    display: none;
-  }
-  .userInfo {
-    display: none;
-  }
-  .locationInfo {
-    display: none;
-  }
 }
 
 .form-control.searchUser {
@@ -128,6 +152,8 @@
   padding-right: 9px;
   margin: 0;
   margin-bottom: 8px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .statusIna {
@@ -150,4 +176,19 @@
 .imgUser {
   width: 130%;
   height: 100%;
+}
+
+.imgUserStat {
+  width: 4rem;
+  height: 4rem;
+}
+
+.widget-stats {
+  background-color: #ebf2f7;
+  border-radius: 8px;
+}
+
+.labelRol {
+  color: rgb(161, 161, 161);
+  margin: 0;
 }
