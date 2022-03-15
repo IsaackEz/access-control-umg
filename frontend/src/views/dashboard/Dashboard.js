@@ -298,6 +298,40 @@ const Dashboard = () => {
     return count
   }
 
+  const countUsers = () => {
+    let countStu = 0
+    let countTea = 0
+    let countInv = 0
+    userData.forEach((userD) => {
+      return records.forEach((record) => {
+        if (userD.userID === record.userID && userD.userRol === 'Alumno') {
+          countStu++
+        } else if (userD.userID === record.userID && userD.userRol === 'Maestro') {
+          countTea++
+        } else if (userD.userID === record.userID && userD.userRol === 'Invitado') {
+          countInv++
+        }
+      })
+    })
+    return { countStu, countTea, countInv }
+  }
+
+  const countInPlaces = () => {
+    let countPri = 0
+    let countRes = 0
+    let countMon = 0
+    records.forEach((record) => {
+      if (record.checkInPlace === 'C. Montemorelos') {
+        countMon++
+      } else if (record.checkInPlace === 'Puerta Principal') {
+        countPri++
+      } else if (record.checkInPlace === 'Residencias') {
+        countRes++
+      }
+    })
+    return { countPri, countRes, countMon }
+  }
+
   return (
     <>
       <CCard className="mb-2">
@@ -308,21 +342,23 @@ const Dashboard = () => {
             <CCol lg={10}>
               {onselect.name && (
                 <div className="locationInfo">
-                  <div className="locationName">
-                    <strong>{onselect.name}</strong>
-                    <hr className="mt-0 mt-2" />
-                  </div>
+                  <div className="locationHeader">
+                    <div className="locationName">
+                      <strong>{onselect.name}</strong>
+                      <hr className="mt-0 mt-2" />
+                    </div>
 
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="form-control searchUser"
-                    maxLength="10"
-                    minLength="4"
-                    onChange={(e) => {
-                      setSearch(e.target.value)
-                    }}
-                  />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      className="form-control searchUser"
+                      maxLength="10"
+                      minLength="4"
+                      onChange={(e) => {
+                        setSearch(e.target.value)
+                      }}
+                    />
+                  </div>
                   {user
                     .filter((val) => {
                       if (
@@ -336,7 +372,8 @@ const Dashboard = () => {
                     })
                     .map((item) =>
                       item.records.recordInPlace === onselect.name &&
-                      item.records.recordOutTime === null ? (
+                      (item.records.recordOutTime === null ||
+                        item.records.recordOutPlace === '') ? (
                         <div
                           className="locationUsers"
                           onClick={() => {
@@ -536,47 +573,62 @@ const Dashboard = () => {
         </CCardBody>
       </CCard>
       <CRow>
-        <CCol sm={6} lg={8}>
+        <CCol className="user-stats" lg={8}>
           <CCard className="mb-4">
             <CCardBody>
               <h5 className="card-title mb-2">Estadistica de usuarios</h5>
               <hr className="mt-0" />
               <CRow>
                 <CCol sm={6} lg={4}>
-                  <CWidgetStatsB
-                    className="mb-1"
-                    color="info"
-                    inverse
-                    progress={{ value: 100 }}
-                    title="Alumnos"
-                    value={user.length}
-                  />
+                  <CCardBody>
+                    <div className="widget-stats p-2">
+                      <CRow>
+                        <div className="col-4">
+                          <img className="imgUserStat" src={student} alt="" />
+                        </div>
+                        <div className="col-auto m-2">
+                          <h2 className="userTextLabel">{countUsers().countStu}</h2>
+                          <p className="labelRol">Alumnos</p>
+                        </div>
+                      </CRow>
+                    </div>
+                  </CCardBody>
                 </CCol>
                 <CCol sm={6} lg={4}>
-                  <CWidgetStatsB
-                    className="mb-1"
-                    color="info"
-                    inverse
-                    progress={{ value: 100 }}
-                    title="Maestros"
-                    value={user.length}
-                  />
+                  <CCardBody>
+                    <div className="widget-stats p-2">
+                      <CRow>
+                        <div className="col-4">
+                          <img className="imgUserStat" src={teacher} alt="" />
+                        </div>
+                        <div className="col-auto m-2">
+                          <h2 className="userTextLabel">{countUsers().countTea}</h2>
+                          <p className="labelRol">Maestros</p>
+                        </div>
+                      </CRow>
+                    </div>
+                  </CCardBody>
                 </CCol>
                 <CCol sm={6} lg={4}>
-                  <CWidgetStatsB
-                    className="mb-1"
-                    color="info"
-                    inverse
-                    progress={{ value: 100 }}
-                    title="Invitados"
-                    value={user.length}
-                  />
+                  <CCardBody>
+                    <div className="widget-stats p-2">
+                      <CRow>
+                        <div className="col-4">
+                          <img className="imgUserStat" src={guest} alt="" />
+                        </div>
+                        <div className="col-auto m-2">
+                          <h2 className="userTextLabel">{countUsers().countInv}</h2>
+                          <p className="labelRol">Invitados</p>
+                        </div>
+                      </CRow>
+                    </div>
+                  </CCardBody>
                 </CCol>
               </CRow>
             </CCardBody>
           </CCard>
         </CCol>
-        <CCol sm={6} lg={4}>
+        <CCol className="in-out" lg={4}>
           <CCard className="mb-4">
             <CCardBody>
               <h5 className="card-title mb-2">Entradas</h5>
@@ -585,19 +637,25 @@ const Dashboard = () => {
                 <CCol sm={10}>
                   <p>Puerta Principal</p>
                 </CCol>
-                <CCol>10</CCol>
+                <CCol>
+                  <span className="nUserLocation">{countInPlaces().countPri}</span>
+                </CCol>
               </CRow>
               <CRow>
                 <CCol sm={10}>
                   <p>C. Montemorelos</p>
                 </CCol>
-                <CCol>10</CCol>
+                <CCol>
+                  <span className="nUserLocation">{countInPlaces().countMon}</span>
+                </CCol>
               </CRow>
               <CRow>
                 <CCol sm={10}>
                   <p>Residencias</p>
                 </CCol>
-                <CCol>10</CCol>
+                <CCol>
+                  <span className="nUserLocation">{countInPlaces().countRes}</span>
+                </CCol>
               </CRow>
             </CCardBody>
           </CCard>
