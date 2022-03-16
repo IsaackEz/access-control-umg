@@ -67,7 +67,7 @@ import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
 const axiosInstance = axios.create({
-  baseURL: '//64.227.108.195:5000/api',
+  baseURL: process.env.AXIOS_BASE_URL,
 })
 
 const Dashboard = () => {
