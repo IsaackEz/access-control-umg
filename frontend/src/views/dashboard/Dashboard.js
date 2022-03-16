@@ -20,7 +20,6 @@ import {
   CProgress,
   CRow,
   CTable,
-  CWidgetStatsB,
   CTableBody,
   CTableDataCell,
   CTableHead,
@@ -68,7 +67,7 @@ import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
 const axiosInstance = axios.create({
-  baseURL: '//64.227.108.195:5000/',
+  baseURL: '//64.227.108.195:5000/api',
 })
 
 const Dashboard = () => {
