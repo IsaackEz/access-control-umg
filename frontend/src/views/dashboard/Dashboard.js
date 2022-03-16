@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import geoJSON from 'src/assets/json/UMG.json'
 import axios from 'axios'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import { TimePicker } from '@material-ui/pickers'
@@ -62,6 +61,8 @@ import student from 'src/assets/images/user/student.png'
 import teacher from 'src/assets/images/user/teacher.png'
 import guest from 'src/assets/images/user/guest.png'
 import foreign from 'src/assets/images/user/foreign.png'
+
+import geoJSON from 'src/assets/brand/UMG.json'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
