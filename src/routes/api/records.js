@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
+const cors = require('cors');
 
 const Record = require('../../Models/Records');
 
-router.get('/', (req, res) => {
+router.get('/', cors(), (req, res) => {
 	Record.find()
 		.sort({ checkInTime: -1 })
 		.then((users) => res.json(users));
 });
 
-router.get('/filter', (req, res) => {
+router.get('/filter', cors(), (req, res) => {
 	Record.find({
 		checkOutTime: '',
 	})
@@ -17,7 +18,7 @@ router.get('/filter', (req, res) => {
 		.then((users) => res.json(users));
 });
 
-router.get('/lastlocation', (req, res) => {
+router.get('/lastlocation', cors(), (req, res) => {
 	records = [];
 	Record.find({
 		checkOutTime: '',
@@ -32,7 +33,7 @@ router.get('/lastlocation', (req, res) => {
 	});
 });
 
-router.post('/', (req, res) => {
+router.post('/', cors(), (req, res) => {
 	const newUser = new Record({
 		userID: req.body.userID,
 		userRol: req.body.userRol,

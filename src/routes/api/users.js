@@ -3,12 +3,12 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const User = require('../../Models/User');
-
-router.get('/', (req, res) => {
+const cors = require('cors');
+router.get('/', cors(), (req, res) => {
 	User.find().then((user) => res.json(user));
 });
 
-router.post('/', (req, res) => {
+router.post('/', cors(), (req, res) => {
 	const newUser = new User({
 		userID: req.body.userID,
 		userRol: req.body.userRol,
@@ -21,7 +21,7 @@ router.post('/', (req, res) => {
 	newUser.save().then((user) => res.json(user));
 });
 
-router.get('/geojson', (req, res) => {
+router.get('/geojson', cors(), (req, res) => {
 	res.sendFile(path.join(__dirname, '../../public/UMG.json'));
 });
 
