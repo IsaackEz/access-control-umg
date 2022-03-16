@@ -66,10 +66,6 @@ import foreign from 'src/assets/images/user/foreign.png'
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
-const axiosInstance = axios.create({
-  baseURL: process.env.AXIOS_BASE_URL,
-})
-
 const Dashboard = () => {
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
@@ -200,11 +196,13 @@ const Dashboard = () => {
   const [records, setRecords] = useState([])
   const [search, setSearch] = useState('')
   const tileURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-
+  const axiosInstance = axios.create({
+    baseURL: process.env.AXIOS_BASE_URL,
+  })
   useEffect(() => {
     const loadRec = async () => {
       await axiosInstance
-        .get('/api/records/lastlocation')
+        .get('https://api.cinic.xyz/api/records/lastlocation')
         .then((res) => {
           setUser(res.data)
         })
@@ -218,7 +216,7 @@ const Dashboard = () => {
   useEffect(() => {
     const loadUsers = async () => {
       await axiosInstance
-        .get('/api/users')
+        .get('https://api.cinic.xyz/api/users')
         .then((res) => {
           setUserData(res.data)
         })
@@ -232,7 +230,7 @@ const Dashboard = () => {
   useEffect(() => {
     const loadRecords = async () => {
       await axiosInstance
-        .get('/api/records/filter')
+        .get('https://api.cinic.xyz/api/records/filter')
         .then((res) => {
           setRecords(res.data)
         })
