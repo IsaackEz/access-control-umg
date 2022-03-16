@@ -6,6 +6,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import { TimePicker } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import esLocale from 'date-fns/locale/es'
+import geoJSON from '../../geojson'
 
 import {
   CAvatar,
@@ -535,7 +536,7 @@ const Dashboard = () => {
                   url={tileURL}
                   attribution='© <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
                 />
-                <GeoJSON style={featureStyle} onEachFeature={onEachLocation} />
+                <GeoJSON style={featureStyle} data={geoJSON} onEachFeature={onEachLocation} />
               </MapContainer>
             </CCol>
 
@@ -549,7 +550,7 @@ const Dashboard = () => {
                     <p className="userTextLabel">Usuarios</p>
                   </div>
 
-                  {/* {geoJSON.features.map((list, key) => {
+                  {geoJSON.features.map((list, key) => {
                     return (
                       <div
                         className="userItem mb-3"
@@ -570,7 +571,7 @@ const Dashboard = () => {
                         )}
                       </div>
                     )
-                  })} */}
+                  })}
                 </CCardBody>
               </CCard>
             </CCol>
