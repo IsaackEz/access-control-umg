@@ -62,8 +62,6 @@ import teacher from 'src/assets/images/user/teacher.png'
 import guest from 'src/assets/images/user/guest.png'
 import foreign from 'src/assets/images/user/foreign.png'
 
-import geoJSON from '%PUBLIC_URL%/UMG.json'
-
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
@@ -537,7 +535,7 @@ const Dashboard = () => {
                   url={tileURL}
                   attribution='© <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
                 />
-                <GeoJSON style={featureStyle} data={geoJSON} onEachFeature={onEachLocation} />
+                <GeoJSON style={featureStyle} onEachFeature={onEachLocation} />
               </MapContainer>
             </CCol>
 
@@ -551,7 +549,7 @@ const Dashboard = () => {
                     <p className="userTextLabel">Usuarios</p>
                   </div>
 
-                  {geoJSON.features.map((list, key) => {
+                  {/* {geoJSON.features.map((list, key) => {
                     return (
                       <div
                         className="userItem mb-3"
@@ -572,7 +570,7 @@ const Dashboard = () => {
                         )}
                       </div>
                     )
-                  })}
+                  })} */}
                 </CCardBody>
               </CCard>
             </CCol>
