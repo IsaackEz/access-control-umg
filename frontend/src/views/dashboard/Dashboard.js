@@ -412,7 +412,6 @@ const Dashboard = () => {
                       <div className="userDetails">
                         <CRow>
                           <CCol lg={2}>
-                            {console.log(data.userRol)}
                             {data.userRol === 'Alumno' || data.userRol === 'Residente' ? (
                               <img className="imgUser" src={student} alt="" />
                             ) : data.userRol === 'Maestro' ? (
@@ -549,7 +548,6 @@ const Dashboard = () => {
                     </h2>{' '}
                     <p className="userTextLabel">Usuarios</p>
                   </div>
-
                   {geoJSON.features.map((list, key) => {
                     return (
                       <div
