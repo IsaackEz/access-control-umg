@@ -7,9 +7,10 @@ dotenv.config();
 const records = require('./routes/api/records');
 const users = require('./routes/api/users');
 const test = require('./routes/api/test');
+const cors = require('cors');
 
 const app = express();
-
+app.user(cors());
 app.use(bodyParser.json());
 
 app.use('/api/records', records);
