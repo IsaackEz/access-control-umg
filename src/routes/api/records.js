@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
+const geoJSON = require('../../public/UMG.json');
 
 const Record = require('../../Models/Records');
 
@@ -8,6 +9,10 @@ router.get('/', cors(), (req, res) => {
 	Record.find()
 		.sort({ checkInTime: -1 })
 		.then((users) => res.json(users));
+});
+
+router.get('/geojson', cors(), (req, res) => {
+	res.json(geoJSON);
 });
 
 router.get('/filter', cors(), (req, res) => {
