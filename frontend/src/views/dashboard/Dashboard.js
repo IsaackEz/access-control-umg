@@ -68,7 +68,7 @@ import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
 const axiosInstance = axios.create({
-  baseURL: 'http://64.227.108.195:5000/',
+  baseURL: 'https://64.227.108.195:5000/',
 })
 
 const Dashboard = () => {
@@ -535,7 +535,7 @@ const Dashboard = () => {
               <MapContainer center={{ lng: '-103.40838776', lat: '20.63412074' }} zoom={18}>
                 <TileLayer
                   url={tileURL}
-                  attribution='© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                  attribution='© <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
                 />
                 <GeoJSON style={featureStyle} data={geoJSON} onEachFeature={onEachLocation} />
               </MapContainer>
