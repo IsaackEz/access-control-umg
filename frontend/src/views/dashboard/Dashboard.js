@@ -62,7 +62,7 @@ import teacher from 'src/assets/images/user/teacher.png'
 import guest from 'src/assets/images/user/guest.png'
 import foreign from 'src/assets/images/user/foreign.png'
 
-import geoJSON from 'src/assets/UMG.json'
+import geoJSON from 'public/UMG.json'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
