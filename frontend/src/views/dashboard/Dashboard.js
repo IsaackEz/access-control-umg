@@ -304,7 +304,10 @@ const Dashboard = () => {
     let countInv = 0
     userData.forEach((userD) => {
       return records.forEach((record) => {
-        if (userD.userID === record.userID && userD.userRol === 'Alumno') {
+        if (
+          userD.userID === record.userID &&
+          (userD.userRol === 'Alumno' || userD.userRol === 'Residente')
+        ) {
           countStu++
         } else if (userD.userID === record.userID && userD.userRol === 'Maestro') {
           countTea++
@@ -407,7 +410,7 @@ const Dashboard = () => {
                         <CRow>
                           <CCol lg={2}>
                             {console.log(data.userRol)}
-                            {data.userRol === 'Alumno' ? (
+                            {data.userRol === 'Alumno' || data.userRol === 'Residente' ? (
                               <img className="imgUser" src={student} alt="" />
                             ) : data.userRol === 'Maestro' ? (
                               <img className="imgUser" src={teacher} alt="" />
