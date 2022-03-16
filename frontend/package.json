@@ -22,7 +22,6 @@
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand"
   },
-  "proxy": "http://localhost:5000/",
   "config": {
     "coreui_library_short_version": "4.1"
   },
@@ -42,6 +41,7 @@
     "chart.js": "^3.7.1",
     "classnames": "^2.3.1",
     "core-js": "^3.21.1",
+    "http-proxy-middleware": "^2.0.4",
     "leaflet": "^1.7.1",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
