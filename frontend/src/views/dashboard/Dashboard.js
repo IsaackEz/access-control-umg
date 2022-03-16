@@ -67,6 +67,10 @@ import foreign from 'src/assets/images/user/foreign.png'
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 
+const axiosInstance = axios.create({
+  baseURL: 'http://64.227.108.195:5000/',
+})
+
 const Dashboard = () => {
   const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
@@ -200,7 +204,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const loadRec = async () => {
-      await axios
+      await axiosInstance
         .get('/api/records/lastlocation')
         .then((res) => {
           setUser(res.data)
@@ -214,7 +218,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const loadUsers = async () => {
-      await axios
+      await axiosInstance
         .get('/api/users')
         .then((res) => {
           setUserData(res.data)
@@ -228,7 +232,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const loadRecords = async () => {
-      await axios
+      await axiosInstance
         .get('/api/records/filter')
         .then((res) => {
           setRecords(res.data)
