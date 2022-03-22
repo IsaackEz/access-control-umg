@@ -50,6 +50,7 @@ router.post('/', cors(), (req, res) => {
 	});
 	newUser.save().then((users) => res.json(users));
 	req.io.sockets.emit('newUser');
+	console.log('works');
 });
 
 module.exports = router;
