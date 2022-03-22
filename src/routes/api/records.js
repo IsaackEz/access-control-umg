@@ -49,6 +49,7 @@ router.post('/', cors(), (req, res) => {
 		records: req.body.records,
 	});
 	newUser.save().then((users) => res.json(users));
+	req.io.sockets.emit('newUser');
 });
 
 module.exports = router;
