@@ -5,7 +5,15 @@ import ReactDOM from 'react-dom'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { Provider } from 'react-redux'
+import * as Sentry from '@sentry/react'
+import { BrowserTracing } from '@sentry/tracing'
 import store from './store'
+
+Sentry.init({
+  dsn: process.env.REACT_APP_DSN,
+  integrations: [new BrowserTracing()],
+  tracesSampleRate: 1.0,
+})
 
 ReactDOM.render(
   <Provider store={store}>
