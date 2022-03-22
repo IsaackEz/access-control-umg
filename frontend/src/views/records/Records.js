@@ -9,7 +9,7 @@ const Tables = () => {
   const [userData, setUserData] = useState([])
   const [recordsAll, setRecordsAll] = useState([])
 
-  const socket = useRef(io.connect('http://localhost:5000/'))
+  const socket = useRef(io.connect(process.env.REACT_APP_IO))
 
   const loadUserData = async () => {
     await axios

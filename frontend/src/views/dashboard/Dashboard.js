@@ -184,7 +184,7 @@ const Dashboard = () => {
   const [records, setRecords] = useState([])
   const [recordsAll, setRecordsAll] = useState([])
   const [search, setSearch] = useState('')
-  const socket = useRef(io.connect('http://localhost:5000/'))
+  const socket = useRef(io.connect(process.env.REACT_APP_IO))
 
   const loadUsers = async () => {
     await axios
