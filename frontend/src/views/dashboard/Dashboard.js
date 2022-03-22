@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
@@ -7,14 +7,14 @@ import { TimePicker } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import esLocale from 'date-fns/locale/es'
 import geoJSON from '../../geojson'
+import DataTable from 'react-data-table-component'
+
+import { io } from 'socket.io-client'
 
 import {
   CAvatar,
-  CButton,
-  CButtonGroup,
   CCard,
   CCardBody,
-  CCardFooter,
   CCardHeader,
   CCol,
   CProgress,
@@ -26,8 +26,7 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
-import { CChartLine } from '@coreui/react-chartjs'
-import { getStyle, hexToRgba } from '@coreui/utils'
+
 import CIcon from '@coreui/icons-react'
 import {
   cibCcAmex,
@@ -46,7 +45,6 @@ import {
   cifPl,
   cifUs,
   cibTwitter,
-  cilCloudDownload,
   cilPeople,
   cilUser,
   cilUserFemale,
@@ -63,20 +61,7 @@ import teacher from 'src/assets/images/user/teacher.png'
 import guest from 'src/assets/images/user/guest.png'
 import foreign from 'src/assets/images/user/foreign.png'
 
-import WidgetsBrand from '../widgets/WidgetsBrand'
-import WidgetsDropdown from '../widgets/WidgetsDropdown'
-
 const Dashboard = () => {
-  const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
-
-  const progressExample = [
-    { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
-    { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
-    { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
-    { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
-    { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
-  ]
-
   const progressGroupExample1 = [
     { title: 'Monday', value1: 34, value2: 78 },
     { title: 'Tuesday', value1: 56, value2: 94 },
@@ -189,56 +174,72 @@ const Dashboard = () => {
       activity: 'Last week',
     },
   ]
+
+  const tileURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+
   const [onselect, setOnselect] = useState({})
   const [onselect2, setOnselect2] = useState({})
   const [user, setUser] = useState([])
   const [userData, setUserData] = useState([])
   const [records, setRecords] = useState([])
+  const [recordsAll, setRecordsAll] = useState([])
   const [search, setSearch] = useState('')
-  const tileURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-  const axiosInstance = axios.create({
-    baseURL: process.env.AXIOS_BASE_URL,
-  })
-  useEffect(() => {
-    const loadRec = async () => {
-      await axiosInstance
-        .get('https://api.cinic.xyz/api/records/lastlocation')
-        .then((res) => {
-          setUser(res.data)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    }
-    loadRec()
-  }, [])
+  const socket = useRef(io.connect('http://localhost:5000/'))
+
+  const loadUsers = async () => {
+    await axios
+      .get('https://api.cinic.xyz/api/records/lastlocation')
+      .then((res) => {
+        setUser(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  const loadUserData = async () => {
+    await axios
+      .get('https://api.cinic.xyz/api/users')
+      .then((res) => {
+        setUserData(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  const loadRecords = async () => {
+    await axios
+      .get('https://api.cinic.xyz/api/records/filter')
+      .then((res) => {
+        setRecords(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+  const loadAllRecords = async () => {
+    await axios
+      .get('https://api.cinic.xyz/api/records')
+      .then((res) => {
+        setRecordsAll(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
 
   useEffect(() => {
-    const loadUsers = async () => {
-      await axiosInstance
-        .get('https://api.cinic.xyz/api/users')
-        .then((res) => {
-          setUserData(res.data)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    }
-    loadUsers()
-  }, [])
-
-  useEffect(() => {
-    const loadRecords = async () => {
-      await axiosInstance
-        .get('https://api.cinic.xyz/api/records/filter')
-        .then((res) => {
-          setRecords(res.data)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    }
+    loadAllRecords()
     loadRecords()
+    loadUsers()
+    loadUserData()
+    socket.current.on('newUser', () => {
+      loadAllRecords()
+      loadRecords()
+      loadUsers()
+      loadUserData()
+    })
   }, [])
 
   const highlightFeature = (e) => {
@@ -336,6 +337,57 @@ const Dashboard = () => {
     return { countPri, countRes, countMon }
   }
 
+  const columns = [
+    {
+      name: 'Nombre',
+      selector: (row) => row.fullName,
+      sortable: true,
+    },
+    {
+      name: 'Usuario',
+      selector: (row) => row.userID,
+      sortable: true,
+    },
+    {
+      name: 'Rol',
+      selector: (row) => row.userRol,
+      sortable: true,
+    },
+    {
+      name: 'Lugar de entrada',
+      selector: (row) => row.checkInPlace,
+      sortable: true,
+    },
+    {
+      name: 'Hora de entrada',
+      selector: (row) => row.checkInTime,
+      sortable: true,
+    },
+    {
+      name: 'Lugar de salida',
+      selector: (row) => row.checkOutPlace,
+      sortable: true,
+    },
+    {
+      name: 'Hora de salida',
+      selector: (row) => row.checkOutTime,
+      sortable: true,
+    },
+  ]
+
+  const getNames = () => {
+    let fullRecords = recordsAll.slice()
+    userData.forEach((names) => {
+      fullRecords.forEach((record) => {
+        if (names.userID === record.userID) {
+          record['fullName'] = names.name + ' ' + names.lastname
+          record['userRol'] = names.userRol
+        }
+      })
+    })
+    return fullRecords
+  }
+
   return (
     <>
       <CCard className="mb-2">
@@ -351,7 +403,6 @@ const Dashboard = () => {
                       <strong>{onselect.name}</strong>
                       <hr className="mt-0 mt-2" />
                     </div>
-
                     <input
                       type="text"
                       placeholder="Search..."
@@ -485,6 +536,7 @@ const Dashboard = () => {
                                                 />
                                               </CCol>
                                             </MuiPickersUtilsProvider>
+
                                             {record.records[i].recordOutTime !== null ? (
                                               <MuiPickersUtilsProvider
                                                 utils={DateFnsUtils}
@@ -664,135 +716,15 @@ const Dashboard = () => {
         </CCol>
       </CRow>
 
-      <CCard className="mb-4">
+      <CCard className=" mb-4">
         <CCardBody>
-          <CRow>
-            <CCol sm={5}>
-              <h4 id="traffic" className="card-title mb-0">
-                Traffic
-              </h4>
-              <div className="small text-medium-emphasis">January - July 2021</div>
-            </CCol>
-            <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
-                <CIcon icon={cilCloudDownload} />
-              </CButton>
-              <CButtonGroup className="float-end me-3">
-                {['Day', 'Month', 'Year'].map((value) => (
-                  <CButton
-                    color="outline-secondary"
-                    key={value}
-                    className="mx-0"
-                    active={value === 'Month'}
-                  >
-                    {value}
-                  </CButton>
-                ))}
-              </CButtonGroup>
-            </CCol>
-          </CRow>
-          <CChartLine
-            style={{ height: '300px', marginTop: '40px' }}
-            data={{
-              labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-              datasets: [
-                {
-                  label: 'My First dataset',
-                  backgroundColor: hexToRgba(getStyle('--cui-info'), 10),
-                  borderColor: getStyle('--cui-info'),
-                  pointHoverBackgroundColor: getStyle('--cui-info'),
-                  borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                  fill: true,
-                },
-                {
-                  label: 'My Second dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-success'),
-                  pointHoverBackgroundColor: getStyle('--cui-success'),
-                  borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                },
-                {
-                  label: 'My Third dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-danger'),
-                  pointHoverBackgroundColor: getStyle('--cui-danger'),
-                  borderWidth: 1,
-                  borderDash: [8, 5],
-                  data: [65, 65, 65, 65, 65, 65, 65],
-                },
-              ],
-            }}
-            options={{
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: false,
-                },
-              },
-              scales: {
-                x: {
-                  grid: {
-                    drawOnChartArea: false,
-                  },
-                },
-                y: {
-                  ticks: {
-                    beginAtZero: true,
-                    maxTicksLimit: 5,
-                    stepSize: Math.ceil(250 / 5),
-                    max: 250,
-                  },
-                },
-              },
-              elements: {
-                line: {
-                  tension: 0.4,
-                },
-                point: {
-                  radius: 0,
-                  hitRadius: 10,
-                  hoverRadius: 4,
-                  hoverBorderWidth: 3,
-                },
-              },
-            }}
-          />
+          <h5 className="card-title mb-2">Historial</h5>
+          <hr className="mt-0" />
+          <div className="containerTable">
+            <DataTable columns={columns} data={getNames()} pagination rowsPerPage={15} responsive />
+          </div>
         </CCardBody>
-        <CCardFooter>
-          <CRow xs={{ cols: 1 }} md={{ cols: 5 }} className="text-center">
-            {progressExample.map((item, index) => (
-              <CCol className="mb-sm-2 mb-0" key={index}>
-                <div className="text-medium-emphasis">{item.title}</div>
-                <strong>
-                  {item.value} ({item.percent}%)
-                </strong>
-                <CProgress thin className="mt-2" color={item.color} value={item.percent} />
-              </CCol>
-            ))}
-          </CRow>
-        </CCardFooter>
       </CCard>
-
-      <WidgetsBrand withCharts />
-      <WidgetsDropdown />
 
       <CRow>
         <CCol xs>
