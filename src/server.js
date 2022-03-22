@@ -66,7 +66,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-	res.send('Welcome to Access Control UMG');
+	res.send('Access Control UMG');
 });
 
 server.listen(port, () => {
