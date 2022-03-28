@@ -23,6 +23,20 @@ router.get('/filter', cors(), (req, res) => {
 		.then((users) => res.json(users));
 });
 
+router.get('/arduino', cors(), (req, res) => {
+	records = [];
+	Record.find({
+		checkOutTime: '',
+	}).then((users) => {
+		users.forEach((user) => {
+			records.push({
+				userID: user.userID,
+			});
+		});
+		res.json(records);
+	});
+});
+
 router.get('/lastlocation', cors(), (req, res) => {
 	records = [];
 	Record.find({
@@ -39,6 +53,7 @@ router.get('/lastlocation', cors(), (req, res) => {
 });
 
 router.post('/', cors(), (req, res) => {
+	console.log('works');
 	const newUser = new Record({
 		userID: req.body.userID,
 		userRol: req.body.userRol,

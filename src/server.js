@@ -18,7 +18,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
 	cors: {
-		origin: 'http://localhost:3000',
+		origin: ['http://localhost:3000', 'https://www.cinic.xyz'],
 	},
 });
 
@@ -55,7 +55,6 @@ app.use('/api/test', test);
 app.use(Sentry.Handlers.errorHandler());
 
 // Assets for production
-
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static('frontend/build'));
 	app.get('/*', (req, res) => {

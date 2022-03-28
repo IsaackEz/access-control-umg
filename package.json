@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "src/server.js",
 	"scripts": {
+		"test": "set NODE_OPTIONS=--experimental-vm-modules && jest",
 		"client-install": "npm install --prefix frontend",
 		"start": "node src/server.js",
 		"server": "nodemon src/server.js",
@@ -26,6 +27,8 @@
 		"socket.io": "^4.4.1"
 	},
 	"devDependencies": {
-		"nodemon": "^2.0.15"
+		"jest": "^27.5.1",
+		"nodemon": "^2.0.15",
+		"supertest": "^6.2.2"
 	}
 }
