@@ -25,16 +25,7 @@ router.get('/filter', cors(), (req, res) => {
 
 router.get('/arduino', cors(), (req, res) => {
 	records = [];
-	Record.find({
-		checkOutTime: '',
-	}).then((users) => {
-		users.forEach((user) => {
-			records.push({
-				userID: user.userID,
-			});
-		});
-		res.json(records);
-	});
+	Record.find({ userID: '006219' }).then((users) => res.json(users));
 });
 
 router.get('/lastlocation', cors(), (req, res) => {
