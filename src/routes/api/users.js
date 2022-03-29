@@ -12,7 +12,7 @@ router.get('/:userID', cors(), (req, res) => {
 	const { userID } = req.params;
 	User.find({ userID: userID }).then((user) => {
 		if (user != '') {
-			res.json(user[0].userID);
+			res.json([user[0].userID]);
 		} else {
 			res.json(user);
 		}

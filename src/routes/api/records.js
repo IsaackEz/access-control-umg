@@ -37,18 +37,18 @@ router.post('/:userID', cors(), (req, res) => {
 	req.io.sockets.emit('newUser');
 });
 
-router.get('/arduino', cors(), (req, res) => {
+router.get('/:userID', cors(), (req, res) => {
+	const { userID } = req.params;
 	records = [];
 	Record.find({
+		userID: userID,
 		checkOutTime: '1970-01-01T00:00:00.000Z',
-	}).then((users) => {
-		users.forEach((user, i) => {
-			records[i] =
-				user.userID +
-				'/' +
-				user.records[user.records.length - 1].recordInPlace;
-		});
-		res.json(records);
+	}).then((user) => {
+		if (user != '') {
+			res.json([user[0].userID]);
+		} else {
+			res.json(user);
+		}
 	});
 });
 router.get('/lastlocation', cors(), (req, res) => {
