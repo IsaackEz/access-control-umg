@@ -45,7 +45,7 @@ router.get('/:userID', cors(), (req, res) => {
 		checkOutTime: '1970-01-01T00:00:00.000Z',
 	}).then((user) => {
 		if (user != '') {
-			res.json([user[0].userID]);
+			res.json(user[0].userID);
 		} else {
 			res.json(user);
 		}
