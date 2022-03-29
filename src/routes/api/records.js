@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors');
-const geoJSON = require('../../public/UMG.json');
 
 const Record = require('../../Models/Records');
 
@@ -26,16 +25,31 @@ router.get('/lastlocation', cors(), (req, res) => {
 	});
 });
 
-router.get('/geojson', cors(), (req, res) => {
-	res.json(geoJSON);
-});
-
 router.get('/filter', cors(), (req, res) => {
 	Record.find({
 		checkOutTime: '1970-01-01T00:00:00.000Z',
 	})
 		.sort({ checkInTime: -1 })
 		.then((users) => res.json(users));
+});
+
+router.get('/:userID', cors(), (req, res) => {
+	const { userID } = req.params;
+	records = [];
+	Record.find({
+		userID: userID,
+		checkOutTime: '1970-01-01T00:00:00.000Z',
+	}).then((user) => {
+		if (user != '') {
+			res.json(
+				user[0].userID +
+					'/' +
+					user[0].records[user[0].records.length - 1].recordInPlace
+			);
+		} else {
+			res.json(user);
+		}
+	});
 });
 
 router.post('/:userID', cors(), (req, res) => {
@@ -50,21 +64,6 @@ router.post('/:userID', cors(), (req, res) => {
 		res.json(users);
 	});
 	req.io.sockets.emit('newUser');
-});
-
-router.get('/:userID', cors(), (req, res) => {
-	const { userID } = req.params;
-	records = [];
-	Record.find({
-		userID: userID,
-		checkOutTime: '1970-01-01T00:00:00.000Z',
-	}).then((user) => {
-		if (user != '') {
-			res.json(user[0].userID);
-		} else {
-			res.json(user);
-		}
-	});
 });
 
 router.post('/', cors(), (req, res) => {
