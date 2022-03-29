@@ -23,13 +23,34 @@ router.get('/filter', cors(), (req, res) => {
 		.then((users) => res.json(users));
 });
 
+router.post('/filter/:userID', cors(), (req, res) => {
+	const { userID } = req.params;
+	Record.find({
+		checkOutTime: '',
+	}).then((users) => {
+		users.update(
+			{ userID: userID },
+			{
+				$set: {
+					checkInTime: req.body.checkInTime,
+					checkOutPlace: req.body.checkOutPlace,
+				},
+			}
+		);
+		res.json(users);
+	});
+});
+
 router.get('/arduino', cors(), (req, res) => {
 	records = [];
 	Record.find({
 		checkOutTime: '',
 	}).then((users) => {
 		users.forEach((user, i) => {
-			records[i] = user.userID;
+			records[i] = {
+				userID: user.userID,
+				lastLocation: user.records[user.records.length - 1].recordInPlace,
+			};
 		});
 		res.json(records);
 	});
