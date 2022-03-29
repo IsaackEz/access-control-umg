@@ -17,7 +17,7 @@ router.get('/geojson', cors(), (req, res) => {
 
 router.get('/filter', cors(), (req, res) => {
 	Record.find({
-		checkOutTime: '',
+		checkOutTime: '1970-01-01T00:00:00.000Z',
 	})
 		.sort({ checkInTime: -1 })
 		.then((users) => res.json(users));
@@ -25,18 +25,18 @@ router.get('/filter', cors(), (req, res) => {
 
 router.post('/filter/:userID', cors(), (req, res) => {
 	const { userID } = req.params;
-	Record.find({
-		checkOutTime: '',
-	}).then((users) => {
-		users.update(
-			{ userID: userID },
-			{
-				$set: {
-					checkInTime: req.body.checkInTime,
-					checkOutPlace: req.body.checkOutPlace,
-				},
-			}
-		);
+	Record.findOneAndUpdate(
+		{
+			userID: userID,
+			checkOutTime: '1970-01-01T00:00:00.000Z',
+		},
+		{
+			$set: {
+				checkInTime: req.body.checkInTime,
+				checkOutPlace: req.body.checkOutPlace,
+			},
+		}
+	).then((users) => {
 		res.json(users);
 	});
 });
@@ -44,13 +44,13 @@ router.post('/filter/:userID', cors(), (req, res) => {
 router.get('/arduino', cors(), (req, res) => {
 	records = [];
 	Record.find({
-		checkOutTime: '',
+		checkOutTime: '1970-01-01T00:00:00.000Z',
 	}).then((users) => {
 		users.forEach((user, i) => {
-			records[i] = {
-				userID: user.userID,
-				lastLocation: user.records[user.records.length - 1].recordInPlace,
-			};
+			records[i] =
+				user.userID +
+				'/' +
+				user.records[user.records.length - 1].recordInPlace;
 		});
 		res.json(records);
 	});
@@ -58,7 +58,7 @@ router.get('/arduino', cors(), (req, res) => {
 router.get('/lastlocation', cors(), (req, res) => {
 	records = [];
 	Record.find({
-		checkOutTime: '',
+		checkOutTime: '1970-01-01T00:00:00.000Z',
 	}).then((users) => {
 		users.forEach((user) => {
 			records.push({
@@ -71,7 +71,6 @@ router.get('/lastlocation', cors(), (req, res) => {
 });
 
 router.post('/', cors(), (req, res) => {
-	console.log('works');
 	const newUser = new Record({
 		userID: req.body.userID,
 		userRol: req.body.userRol,
@@ -83,7 +82,6 @@ router.post('/', cors(), (req, res) => {
 	});
 	newUser.save().then((users) => res.json(users));
 	req.io.sockets.emit('newUser');
-	console.log('works');
 });
 
 module.exports = router;

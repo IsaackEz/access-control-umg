@@ -288,11 +288,15 @@ const Dashboard = () => {
   const getCount = (place) => {
     let count = 0
     user.forEach((userR) => {
-      if (userR.records.recordInPlace === place && userR.records.recordOutTime === null) {
+      if (
+        userR.records.recordInPlace === place &&
+        userR.records.recordOutTime === '1970-01-01T00:00:00.000Z'
+      ) {
         count++
       } else if (
         place === 'UMG' &&
-        (userR.records.recordOutTime !== null || userR.records.recordInPlace === '')
+        (userR.records.recordOutTime !== '1970-01-01T00:00:00.000Z' ||
+          userR.records.recordInPlace === '')
       ) {
         count++
       }
@@ -428,7 +432,7 @@ const Dashboard = () => {
                     })
                     .map((item) =>
                       item.records.recordInPlace === onselect.name &&
-                      (item.records.recordOutTime === null ||
+                      (item.records.recordOutTime === '1970-01-01T00:00:00.000Z' ||
                         item.records.recordOutPlace === '') ? (
                         <div
                           className="locationUsers"
@@ -439,7 +443,7 @@ const Dashboard = () => {
                           {item.userID}
                         </div>
                       ) : onselect.name === 'UMG' &&
-                        (item.records.recordOutTime !== null ||
+                        (item.records.recordOutTime !== '1970-01-01T00:00:00.000Z' ||
                           item.records.recordInPlace === '') ? (
                         <div
                           className="locationUsers"
@@ -520,7 +524,7 @@ const Dashboard = () => {
                                     <strong>Historial</strong>
                                     {record.records.map((item, i) => {
                                       return record.records[i].recordInPlace !== '' ? (
-                                        item.recordInPlace !== null ? (
+                                        item.recordInPlace !== '1970-01-01T00:00:00.000Z' ? (
                                           <CRow>
                                             <CCol lg={4}>
                                               <p>{record.records[i].recordInPlace}</p>
@@ -538,7 +542,8 @@ const Dashboard = () => {
                                               </CCol>
                                             </MuiPickersUtilsProvider>
 
-                                            {record.records[i].recordOutTime !== null ? (
+                                            {record.records[i].recordOutTime !==
+                                            '1970-01-01T00:00:00.000Z' ? (
                                               <MuiPickersUtilsProvider
                                                 utils={DateFnsUtils}
                                                 locale={esLocale}
