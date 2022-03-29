@@ -23,22 +23,18 @@ router.get('/filter', cors(), (req, res) => {
 		.then((users) => res.json(users));
 });
 
-router.post('/filter/:userID', cors(), (req, res) => {
+router.post('/:userID', cors(), (req, res) => {
 	const { userID } = req.params;
-	Record.findOneAndUpdate(
-		{
-			userID: userID,
-			checkOutTime: '1970-01-01T00:00:00.000Z',
-		},
-		{
-			$set: {
-				checkInTime: req.body.checkInTime,
-				checkOutPlace: req.body.checkOutPlace,
-			},
-		}
-	).then((users) => {
+	const filter = { userID: userID, checkOutPlace: '' };
+	const update = {
+		checkOutPlace: req.body.checkOutPlace,
+		checkOutTime: req.body.checkOutTime,
+	};
+
+	Record.findOneAndUpdate(filter, update).then((users) => {
 		res.json(users);
 	});
+	req.io.sockets.emit('newUser');
 });
 
 router.get('/arduino', cors(), (req, res) => {
