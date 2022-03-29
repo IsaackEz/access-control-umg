@@ -8,13 +8,14 @@ router.get('/', cors(), (req, res) => {
 	User.find().then((user) => res.json(user));
 });
 
-router.get('/arduino', cors(), (req, res) => {
-	usID = [];
-	User.find().then((users) => {
-		users.forEach((user, i) => {
-			usID[i] = user.userID;
-		});
-		res.json(usID);
+router.get('/:userID', cors(), (req, res) => {
+	const { userID } = req.params;
+	User.find({ userID: userID }).then((user) => {
+		if (user != '') {
+			res.json(user[0].userID);
+		} else {
+			res.json(user);
+		}
 	});
 });
 
