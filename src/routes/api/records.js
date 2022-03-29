@@ -11,6 +11,21 @@ router.get('/', cors(), (req, res) => {
 		.then((users) => res.json(users));
 });
 
+router.get('/lastlocation', cors(), (req, res) => {
+	records = [];
+	Record.find({
+		checkOutTime: '1970-01-01T00:00:00.000Z',
+	}).then((users) => {
+		users.forEach((user) => {
+			records.push({
+				userID: user.userID,
+				records: user.records[user.records.length - 1],
+			});
+		});
+		res.json(records);
+	});
+});
+
 router.get('/geojson', cors(), (req, res) => {
 	res.json(geoJSON);
 });
@@ -49,20 +64,6 @@ router.get('/:userID', cors(), (req, res) => {
 		} else {
 			res.json(user);
 		}
-	});
-});
-router.get('/lastlocation', cors(), (req, res) => {
-	records = [];
-	Record.find({
-		checkOutTime: '1970-01-01T00:00:00.000Z',
-	}).then((users) => {
-		users.forEach((user) => {
-			records.push({
-				userID: user.userID,
-				records: user.records[user.records.length - 1],
-			});
-		});
-		res.json(records);
 	});
 });
 
