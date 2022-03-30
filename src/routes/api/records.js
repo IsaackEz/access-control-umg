@@ -110,13 +110,12 @@ router.post('/update/:userID', cors(), (req, res) => {
 				records: user.records[user.records.length - 1],
 			});
 		});
-		console.log(
-			records[0].records.recordOutTime ==
-				'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)'
-		);
 		if (records[0].records.recordInPlace == '') {
 			Record.findOneAndUpdate(filter, firstEntry).then((users) => {
-				res.json(users);
+				let test =
+					records[0].records.recordOutTime ==
+					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)';
+				res.json(records[0].records.recordOutTime + test);
 			});
 		} else if (
 			records[0].records.recordInPlace != '' &&
@@ -124,7 +123,10 @@ router.post('/update/:userID', cors(), (req, res) => {
 				'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)'
 		) {
 			Record.findOneAndUpdate(filterOut, firstOut).then((users) => {
-				res.json(users);
+				let test =
+					records[0].records.recordOutTime ==
+					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)';
+				res.json(records[0].records.recordOutTime + test);
 			});
 		} else if (
 			records[0].records.recordInPlace != '' &&
@@ -132,7 +134,10 @@ router.post('/update/:userID', cors(), (req, res) => {
 				'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)'
 		) {
 			Record.findOneAndUpdate(filter, newRecord).then((users) => {
-				res.json(users);
+				let test =
+					records[0].records.recordOutTime !=
+					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)';
+				res.json(records[0].records.recordOutTime + test);
 			});
 		}
 	});
