@@ -119,7 +119,8 @@ router.post('/update/:userID', cors(), (req, res) => {
 			(records[0].records.recordInPlace != '' &&
 				records[0].records.recordOutTime ==
 					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)') ||
-			'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
+			records[0].records.recordOutTime ==
+				'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
 		) {
 			Record.findOneAndUpdate(filterOut, firstOut).then((users) => {
 				res.json(users);
@@ -128,7 +129,8 @@ router.post('/update/:userID', cors(), (req, res) => {
 			(records[0].records.recordInPlace != '' &&
 				records[0].records.recordOutTime !=
 					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)') ||
-			'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
+			records[0].records.recordOutTime !=
+				'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
 		) {
 			Record.findOneAndUpdate(filter, newRecord).then((users) => {
 				res.json(users);
