@@ -71,7 +71,8 @@ router.post('/update/:userID', cors(), (req, res) => {
 		userID: userID,
 		'records.recordOutTime':
 			'1970-01-01T00:00:00.000Z' ||
-			'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)',
+			'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)' ||
+			'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)',
 	};
 	const firstEntry = {
 		$set: {
@@ -114,29 +115,34 @@ router.post('/update/:userID', cors(), (req, res) => {
 			Record.findOneAndUpdate(filter, firstEntry).then((users) => {
 				let test =
 					records[0].records.recordOutTime ==
-					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)';
+						'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)' ||
+					'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)';
 				res.json(records[0].records.recordOutTime + test);
 			});
 		} else if (
-			records[0].records.recordInPlace != '' &&
-			records[0].records.recordOutTime ==
-				'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)'
+			(records[0].records.recordInPlace != '' &&
+				records[0].records.recordOutTime ==
+					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)') ||
+			'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
 		) {
 			Record.findOneAndUpdate(filterOut, firstOut).then((users) => {
 				let test =
 					records[0].records.recordOutTime ==
-					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)';
+						'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)' ||
+					'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)';
 				res.json(records[0].records.recordOutTime + test);
 			});
 		} else if (
-			records[0].records.recordInPlace != '' &&
-			records[0].records.recordOutTime !=
-				'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)'
+			(records[0].records.recordInPlace != '' &&
+				records[0].records.recordOutTime !=
+					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)') ||
+			'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
 		) {
 			Record.findOneAndUpdate(filter, newRecord).then((users) => {
 				let test =
 					records[0].records.recordOutTime !=
-					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)';
+						'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)' ||
+					'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)';
 				res.json(records[0].records.recordOutTime + test);
 			});
 		}
