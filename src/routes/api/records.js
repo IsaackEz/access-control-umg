@@ -13,7 +13,7 @@ router.get('/', cors(), (req, res) => {
 router.get('/lastlocation', cors(), (req, res) => {
 	records = [];
 	Record.find({
-		checkOutTime: '1970-01-01T00:00:00.000Z',
+		checkOutTime: '',
 	}).then((users) => {
 		users.forEach((user) => {
 			records.push({
@@ -27,7 +27,7 @@ router.get('/lastlocation', cors(), (req, res) => {
 
 router.get('/filter', cors(), (req, res) => {
 	Record.find({
-		checkOutTime: '1970-01-01T00:00:00.000Z',
+		checkOutTime: '',
 	})
 		.sort({ checkInTime: -1 })
 		.then((users) => res.json(users));
@@ -37,7 +37,7 @@ router.get('/:userID', cors(), (req, res) => {
 	const { userID } = req.params;
 	Record.find({
 		userID: userID,
-		checkOutTime: '1970-01-01T00:00:00.000Z',
+		checkOutTime: '',
 	}).then((user) => {
 		if (user != '') {
 			res.json(
@@ -69,17 +69,14 @@ router.post('/update/:userID', cors(), (req, res) => {
 	const filter = { userID: userID, checkOutPlace: '' };
 	const filterOut = {
 		userID: userID,
-		'records.recordOutTime':
-			'1970-01-01T00:00:00.000Z' ||
-			'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)' ||
-			'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)',
+		'records.recordOutTime': '',
 	};
 	const firstEntry = {
 		$set: {
 			records: {
 				recordInPlace: req.body.records[0].recordInPlace,
 				recordInTime: req.body.records[0].recordInTime,
-				recordOutTime: '1970-01-01T00:00:00.000Z',
+				recordOutTime: null,
 			},
 		},
 	};
@@ -95,7 +92,7 @@ router.post('/update/:userID', cors(), (req, res) => {
 			records: {
 				recordInPlace: req.body.records[0].recordInPlace,
 				recordInTime: req.body.records[0].recordInTime,
-				recordOutTime: '1970-01-01T00:00:00.000Z',
+				recordOutTime: null,
 			},
 		},
 	};
@@ -103,7 +100,7 @@ router.post('/update/:userID', cors(), (req, res) => {
 	records = [];
 	Record.find({
 		userID: userID,
-		checkOutTime: '1970-01-01T00:00:00.000Z',
+		checkOutTime: '',
 	}).then((users) => {
 		users.forEach((user) => {
 			records.push({
@@ -116,21 +113,15 @@ router.post('/update/:userID', cors(), (req, res) => {
 				res.json(users);
 			});
 		} else if (
-			(records[0].records.recordInPlace != '' &&
-				records[0].records.recordOutTime ==
-					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)') ||
-			records[0].records.recordOutTime ==
-				'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
+			records[0].records.recordInPlace != '' &&
+			records[0].records.recordOutTime == null
 		) {
 			Record.findOneAndUpdate(filterOut, firstOut).then((users) => {
 				res.json(users);
 			});
 		} else if (
-			(records[0].records.recordInPlace != '' &&
-				records[0].records.recordOutTime !=
-					'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)') ||
-			records[0].records.recordOutTime !=
-				'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
+			records[0].records.recordInPlace != '' &&
+			records[0].records.recordOutTime != null
 		) {
 			Record.findOneAndUpdate(filter, newRecord).then((users) => {
 				res.json(users);
