@@ -459,6 +459,15 @@ const Dashboard = () => {
                   {userData.map((data) => {
                     return onselect2.name === data.userID ? (
                       <div className="userDetails">
+                        <div className="titleCloseBtn">
+                          <button
+                            onClick={() => {
+                              setOnselect2({})
+                            }}
+                          >
+                            X
+                          </button>
+                        </div>
                         <CRow>
                           <CCol lg={2}>
                             {data.userRol === 'Alumno' || data.userRol === 'Residente' ? (

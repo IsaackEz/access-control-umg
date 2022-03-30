@@ -96,12 +96,15 @@
   background: rgba(255, 255, 255, 0.979);
   padding: 5px 10px 10px 10px;
   list-style: none;
-  width: 25rem;
+  width: 28rem;
   height: auto;
+  max-height: 18rem;
   font-size: 14px;
   position: absolute;
   z-index: 999;
   box-shadow: 0 0 5px 0 rgba(153, 153, 153, 0.151);
+  overflow: auto;
+  scrollbar-width: none;
 }
 .locationName {
   padding-top: 5px;
@@ -110,6 +113,20 @@
   font-size: 15px;
   text-align: center;
 }
+
+.titleCloseBtn {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.titleCloseBtn button {
+  background-color: transparent;
+  border: none;
+  font-size: 18px;
+  position: absolute;
+  cursor: pointer;
+}
+
 .locationUsers {
   cursor: pointer;
   font-size: 17px;
