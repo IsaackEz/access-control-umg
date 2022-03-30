@@ -235,7 +235,6 @@ const Dashboard = () => {
     loadUsers()
     loadUserData()
     socket.current.on('newUser', () => {
-      console.log('fine')
       loadAllRecords()
       loadRecords()
       loadUsers()
@@ -301,7 +300,6 @@ const Dashboard = () => {
         count++
       }
     })
-
     return count
   }
 
