@@ -113,11 +113,7 @@ router.post('/update/:userID', cors(), (req, res) => {
 		});
 		if (records[0].records.recordInPlace == '') {
 			Record.findOneAndUpdate(filter, firstEntry).then((users) => {
-				let test =
-					records[0].records.recordOutTime ==
-						'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)' ||
-					'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)';
-				res.json(records[0].records.recordOutTime + test);
+				res.json(users);
 			});
 		} else if (
 			(records[0].records.recordInPlace != '' &&
@@ -126,11 +122,7 @@ router.post('/update/:userID', cors(), (req, res) => {
 			'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
 		) {
 			Record.findOneAndUpdate(filterOut, firstOut).then((users) => {
-				let test =
-					records[0].records.recordOutTime ==
-						'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)' ||
-					'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)';
-				res.json(records[0].records.recordOutTime + test);
+				res.json(users);
 			});
 		} else if (
 			(records[0].records.recordInPlace != '' &&
@@ -139,11 +131,7 @@ router.post('/update/:userID', cors(), (req, res) => {
 			'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)'
 		) {
 			Record.findOneAndUpdate(filter, newRecord).then((users) => {
-				let test =
-					records[0].records.recordOutTime !=
-						'Wed Dec 31 1969 18:00:00 GMT-0600 (Central Standard Time)' ||
-					'Thu Jan 01 1970 00:00:00 GMT+0000 (Coordinated Universal Time)';
-				res.json(records[0].records.recordOutTime + test);
+				res.json(users);
 			});
 		}
 	});
