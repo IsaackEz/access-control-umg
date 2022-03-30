@@ -43,7 +43,7 @@ Sentry.init({
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 
-io.on('connection', function (socket) {
+io.on('connection', () => {
 	console.log('Connected to socket.io');
 });
 

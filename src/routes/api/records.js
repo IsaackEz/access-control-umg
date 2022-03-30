@@ -4,145 +4,163 @@ const cors = require('cors');
 
 const Record = require('../../Models/Records');
 
-router.get('/', cors(), (req, res) => {
-	Record.find()
-		.sort({ checkInTime: -1 })
-		.then((users) => res.json(users));
+router.get('/', cors(), async (req, res) => {
+	try {
+		const records = await Record.find().sort({ checkInTime: -1 });
+		res.json(records);
+	} catch (error) {
+		console.log({ error });
+	}
 });
 
-router.get('/lastlocation', cors(), (req, res) => {
-	records = [];
-	Record.find({
-		checkOutTime: '',
-	}).then((users) => {
-		users.forEach((user) => {
-			records.push({
-				userID: user.userID,
-				records: user.records[user.records.length - 1],
+router.get('/lastlocation', cors(), async (req, res) => {
+	try {
+		records = [];
+		await Record.find({
+			checkOutTime: '',
+		}).then((users) => {
+			users.forEach((user) => {
+				records.push({
+					userID: user.userID,
+					records: user.records[user.records.length - 1],
+				});
 			});
 		});
 		res.json(records);
-	});
+	} catch (error) {
+		console.log({ error });
+	}
 });
 
-router.get('/filter', cors(), (req, res) => {
-	Record.find({
-		checkOutTime: '',
-	})
-		.sort({ checkInTime: -1 })
-		.then((users) => res.json(users));
+router.get('/filter', cors(), async (req, res) => {
+	try {
+		const records = await Record.find({
+			checkOutTime: '',
+		}).sort({ checkInTime: -1 });
+		res.json(records);
+	} catch (error) {
+		console.log(error);
+	}
 });
 
-router.get('/:userID', cors(), (req, res) => {
-	const { userID } = req.params;
-	Record.find({
-		userID: userID,
-		checkOutTime: '',
-	}).then((user) => {
-		if (user != '') {
-			res.json(
-				user[0].userID +
-					'/' +
-					user[0].records[user[0].records.length - 1].recordInPlace
-			);
-		} else {
-			res.json(user);
-		}
-	});
+router.get('/:userID', cors(), async (req, res) => {
+	try {
+		const { userID } = req.params;
+		await Record.find({
+			userID: userID,
+			checkOutTime: '',
+		}).then((user) => {
+			if (user != '') {
+				res.json(
+					user[0].userID +
+						'/' +
+						user[0].records[user[0].records.length - 1].recordInPlace
+				);
+			} else {
+				res.json(user);
+			}
+		});
+	} catch (error) {
+		console.log(error);
+	}
 });
 
-router.post('/:userID', cors(), (req, res) => {
-	const { userID } = req.params;
-	const filter = { userID: userID, checkOutPlace: '' };
-	const update = {
-		checkOutPlace: req.body.checkOutPlace,
-		checkOutTime: req.body.checkOutTime,
-	};
-	Record.findOneAndUpdate(filter, update).then((users) => {
-		res.json(users);
-	});
-	req.io.sockets.emit('newUser');
+router.post('/:userID', cors(), async (req, res) => {
+	try {
+		const { userID } = req.params;
+		const filter = { userID: userID, checkOutPlace: '' };
+		const update = {
+			checkOutPlace: req.body.checkOutPlace,
+			checkOutTime: req.body.checkOutTime,
+		};
+		const records = await Record.findOneAndUpdate(filter, update);
+		res.json(records);
+		req.io.sockets.emit('newUser');
+	} catch (error) {
+		console.log(error);
+	}
 });
 
-router.post('/update/:userID', cors(), (req, res) => {
-	const { userID } = req.params;
-	const filter = { userID: userID, checkOutPlace: '' };
-	const filterOut = {
-		userID: userID,
-		'records.recordOutTime': '',
-	};
-	const firstEntry = {
-		$set: {
-			records: {
-				recordInPlace: req.body.records[0].recordInPlace,
-				recordInTime: req.body.records[0].recordInTime,
-				recordOutTime: null,
+router.post('/update/:userID', cors(), async (req, res) => {
+	try {
+		const { userID } = req.params;
+		const filter = { userID: userID, checkOutPlace: '' };
+		const filterOut = {
+			userID: userID,
+			'records.recordOutTime': '',
+		};
+		const firstEntry = {
+			$set: {
+				records: {
+					recordInPlace: req.body.records[0].recordInPlace,
+					recordInTime: req.body.records[0].recordInTime,
+					recordOutTime: null,
+				},
 			},
-		},
-	};
+		};
 
-	const firstOut = {
-		$set: {
-			'records.$.recordOutTime': req.body.records[0].recordOutTime,
-		},
-	};
-
-	const newRecord = {
-		$push: {
-			records: {
-				recordInPlace: req.body.records[0].recordInPlace,
-				recordInTime: req.body.records[0].recordInTime,
-				recordOutTime: null,
+		const firstOut = {
+			$set: {
+				'records.$.recordOutTime': req.body.records[0].recordOutTime,
 			},
-		},
-	};
+		};
 
-	records = [];
-	Record.find({
-		userID: userID,
-		checkOutTime: '',
-	}).then((users) => {
-		users.forEach((user) => {
-			records.push({
-				userID: user.userID,
-				records: user.records[user.records.length - 1],
+		const newRecord = {
+			$push: {
+				records: {
+					recordInPlace: req.body.records[0].recordInPlace,
+					recordInTime: req.body.records[0].recordInTime,
+					recordOutTime: null,
+				},
+			},
+		};
+
+		records = [];
+		await Record.find({
+			userID: userID,
+			checkOutTime: '',
+		}).then((users) => {
+			users.forEach((user) => {
+				records.push({
+					userID: user.userID,
+					records: user.records[user.records.length - 1],
+				});
 			});
 		});
+
 		if (records[0].records.recordInPlace == '') {
-			Record.findOneAndUpdate(filter, firstEntry).then((users) => {
-				res.json(users);
-			});
+			const records = await Record.findOneAndUpdate(filter, firstEntry);
+			res.json(records);
 		} else if (
 			records[0].records.recordInPlace != '' &&
 			records[0].records.recordOutTime == null
 		) {
-			Record.findOneAndUpdate(filterOut, firstOut).then((users) => {
-				res.json(users);
-			});
+			const records = await Record.findOneAndUpdate(filterOut, firstOut);
+			res.json(records);
 		} else if (
 			records[0].records.recordInPlace != '' &&
 			records[0].records.recordOutTime != null
 		) {
-			Record.findOneAndUpdate(filter, newRecord).then((users) => {
-				res.json(users);
-			});
+			const records = await Record.findOneAndUpdate(filter, newRecord);
+			res.json(records);
+		} else {
+			console.log('Couldnt update');
 		}
-	});
-	req.io.sockets.emit('newUser');
+		req.io.sockets.emit('newUser');
+	} catch (error) {
+		console.log(error);
+	}
 });
 
-router.post('/', cors(), (req, res) => {
-	const newUser = new Record({
-		userID: req.body.userID,
-		userRol: req.body.userRol,
-		checkInPlace: req.body.checkInPlace,
-		checkInTime: req.body.checkInTime,
-		checkOutPlace: req.body.checkOutPlace,
-		checkOutTime: req.body.checkOutTime,
-		records: req.body.records,
-	});
-	newUser.save().then((users) => res.json(users));
-	req.io.sockets.emit('newUser');
+router.post('/', cors(), async (req, res) => {
+	try {
+		const newUser = new Record(req.body);
+		const records = await newUser.save();
+		res.json(records);
+		req.io.sockets.emit('newUser');
+	} catch (error) {
+		console.log(error);
+	}
 });
 
 module.exports = router;
