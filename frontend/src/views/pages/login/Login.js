@@ -35,7 +35,7 @@ const Login = () => {
     try {
       const cookies = new Cookies()
       cookies.set('session', 'auth', { path: '/', maxAge: 3600, secure: true })
-      const URL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/login'
+      const URL = process.env.REACT_APP_AXIOS_BASE_URL + 'admin/login'
       const { data: res } = await axios.post(URL, data)
       navigate('/dashboard')
       console.log(res.message)
