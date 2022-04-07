@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 const records = require('./routes/api/records');
 const users = require('./routes/api/users');
 const test = require('./routes/api/test');
+const admins = require('./routes/api/admins');
 const cors = require('cors');
 const Sentry = require('@sentry/node');
 const Tracing = require('@sentry/tracing');
@@ -55,6 +56,7 @@ app.use(function (req, res, next) {
 app.use('/api/records', records);
 app.use('/api/users', users);
 app.use('/api/test', test);
+app.use('/admin', admins);
 
 app.use(Sentry.Handlers.errorHandler());
 

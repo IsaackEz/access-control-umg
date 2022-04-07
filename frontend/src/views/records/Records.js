@@ -87,10 +87,24 @@ const Tables = () => {
         if (names.userID === record.userID) {
           record['fullName'] = names.name + ' ' + names.lastname
           record['userRol'] = names.userRol
+          record['checkInTime'] = tConvert(record.checkInTime.slice(11, 19))
+          if (record.checkOutTime != null) {
+            record['checkOutTime'] = tConvert(record.checkOutTime.slice(11, 19))
+          }
         }
       })
     })
     return fullRecords
+  }
+
+  const tConvert = (time) => {
+    time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time]
+    if (time.length > 1) {
+      time = time.slice(1)
+      time[5] = +time[0] < 12 ? ' AM' : ' PM'
+      time[0] = +time[0] % 12 || 12
+    }
+    return time.join('')
   }
 
   return (

@@ -57,7 +57,8 @@
     "redux": "4.1.2",
     "simplebar-react": "^2.3.6",
     "socket.io-client": "^4.4.1",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.3",
+    "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.2",

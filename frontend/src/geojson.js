@@ -43,7 +43,7 @@ module.exports = {
         ],
       },
       id: '64f0c5ce-2209-4d1c-95d4-0a54b951290f',
-      properties: { name: 'Salon 304' },
+      properties: { name: 'Salon 304', type: 'Salon' },
     },
     {
       type: 'Feature',
@@ -77,7 +77,7 @@ module.exports = {
         ],
       },
       id: '59fc34ee-126b-4d0c-91a0-5df9f20e1331',
-      properties: { name: 'Salon 203' },
+      properties: { name: 'Salon 203', type: 'Salon' },
     },
     {
       type: 'Feature',
@@ -94,7 +94,7 @@ module.exports = {
         ],
       },
       id: 'ef655693-fe61-42c4-a7bf-781f7082ed2a',
-      properties: { name: 'Salon 113' },
+      properties: { name: 'Salon 113', type: 'Salon' },
     },
     {
       type: 'Feature',
@@ -182,7 +182,7 @@ module.exports = {
         ],
       },
       id: '508a1882-b850-4b2b-a50a-f6c2e15459bb',
-      properties: { name: 'Sala de maestros', type: 'Admin' },
+      properties: { name: 'Sala de maestros', type: 'Administrativo' },
     },
   ],
 }
