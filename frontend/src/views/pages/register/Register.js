@@ -62,12 +62,12 @@ const Register = () => {
   const onSubmit = async (e) => {
     e.preventDefault()
     try {
-      const cookies = new Cookies()
       const URL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/signup'
       const { data: res } = await axios.post(URL, data)
-      console.log(cookies.get('session'))
       navigate('/dashboard')
       console.log(res.message)
+      const cookies = new Cookies()
+      cookies.set('session', 'auth', { path: '/', maxAge: 3600, secure: true })
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message)

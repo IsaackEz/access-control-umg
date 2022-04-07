@@ -33,7 +33,7 @@ app.use(bodyParser.json());
 connectDB;
 
 Sentry.init({
-	dsn: 'https://917d7cf64cf24141a50ffba877d48ee3@o1169807.ingest.sentry.io/6263209',
+	dsn: process.env.SENTRY_DNS,
 	integrations: [
 		new Sentry.Integrations.Http({ tracing: true }),
 		new Tracing.Integrations.Express({ app }),
