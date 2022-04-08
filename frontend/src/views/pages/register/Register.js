@@ -17,7 +17,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser, cilAddressBook } from '@coreui/icons'
 import PWD from './PWDRequisite'
-import Auth from '../auth/Auth'
+// import Auth from '../auth/Auth'
 
 const Register = () => {
   const [error, setError] = useState('')
