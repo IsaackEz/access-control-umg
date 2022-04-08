@@ -25,6 +25,7 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
   const [error, setError] = useState('')
+  const [errorAuth, setErrorAuth] = useState('')
   const [visible, setVisible] = useState(false)
   const [auth, setAuth] = useState({
     token: '',
@@ -46,6 +47,7 @@ const Login = () => {
     try {
       const loginURL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/login'
       await axios.post(loginURL, data)
+      setError('')
       const adminURL = process.env.REACT_APP_AXIOS_BASE_URL + `/admin/${data.username}`
       const userData = await axios.get(adminURL)
 
@@ -86,7 +88,7 @@ const Login = () => {
       cookies.set('session', token.id, { path: '/', maxAge: 3600, secure: true })
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
-        setError(error.response.data.message)
+        setErrorAuth(error.response.data.message)
       }
     }
   }
@@ -111,7 +113,6 @@ const Login = () => {
                         placeholder="Usuario"
                         autoComplete="username"
                         name="username"
-                        value={data.username}
                       />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
@@ -124,7 +125,6 @@ const Login = () => {
                         placeholder="Contraseña"
                         autoComplete="current-password"
                         name="password"
-                        value={data.password}
                       />
                     </CInputGroup>
                     <CRow>
@@ -149,7 +149,14 @@ const Login = () => {
         </CRow>
       </CContainer>
 
-      <CModal alignment="center" visible={visible} onClose={() => setVisible(false)}>
+      <CModal
+        alignment="center"
+        visible={visible}
+        onClose={() => {
+          setVisible(false)
+          setAuth('')
+        }}
+      >
         <CModalHeader>
           <CModalTitle>Codigo de Verificacion</CModalTitle>
         </CModalHeader>
@@ -162,13 +169,7 @@ const Login = () => {
               <CInputGroupText>
                 <CIcon icon={cilLockLocked} />
               </CInputGroupText>
-              <CFormInput
-                type="text"
-                onChange={onChangeAuth}
-                placeholder="Codigo"
-                name="token"
-                value={auth.token}
-              />
+              <CFormInput type="text" onChange={onChangeAuth} placeholder="Codigo" name="token" />
             </CInputGroup>
           </CModalBody>
           <CRow>
@@ -183,7 +184,7 @@ const Login = () => {
               </CButton>
             </CCol>
 
-            {error && <div>{error}</div>}
+            {errorAuth && <div>{errorAuth}</div>}
           </CRow>
         </CForm>
       </CModal>
