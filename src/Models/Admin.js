@@ -7,6 +7,7 @@ const AdminSchema = new Schema({
 	fullName: { type: String, required: true, trim: true },
 	email: { type: String, required: true, unique: true, trim: true },
 	secret: { type: String, trim: true },
+	tfa: { type: Boolean, default: false },
 });
 
 module.exports = Admin = mongoose.model('admins', AdminSchema);

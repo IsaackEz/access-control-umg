@@ -47,6 +47,7 @@
     "http-proxy-middleware": "^2.0.4",
     "leaflet": "^1.7.1",
     "prop-types": "^15.8.1",
+    "qrcode": "^1.5.0",
     "react": "^17.0.2",
     "react-app-polyfill": "^3.0.0",
     "react-data-table-component": "^7.4.7",

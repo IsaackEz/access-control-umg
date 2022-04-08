@@ -31,8 +31,7 @@ class App extends Component {
               name="Home"
               element={
                 <PrivateRoute>
-                  {' '}
-                  <DefaultLayout />{' '}
+                  <DefaultLayout />
                 </PrivateRoute>
               }
             />
@@ -56,6 +55,7 @@ class App extends Component {
                 </PrivateRoute>
               }
             />
+
             <Route exact path="/404" name="Page 404" element={<Page404 />} />
             <Route exact path="/500" name="Page 500" element={<Page500 />} />
           </Routes>

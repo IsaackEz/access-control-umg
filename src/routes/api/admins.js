@@ -3,6 +3,7 @@ const router = express.Router();
 const Admin = require('../../Models/Admin');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const speakeasy = require('speakeasy');
 
 router.get('/:adminID', cors(), (req, res) => {
 	const { adminID } = req.params;
@@ -19,12 +20,55 @@ router.post('/signup', cors(), async (req, res) => {
 
 		const salt = await bcrypt.genSalt(Number(10));
 		const hashPassword = await bcrypt.hash(req.body.password, salt);
-
-		await new Admin({ ...req.body, password: hashPassword }).save();
+		const secret = speakeasy.generateSecret();
+		await new Admin({
+			...req.body,
+			password: hashPassword,
+			secret: secret.base32,
+		}).save();
 		res.status(201).send({ message: 'Administrador creado!' });
 	} catch (error) {
 		console.log(error);
 		res.status(500).send({ message: 'Error generado llave' });
+	}
+});
+
+router.post('/verify', cors(), async (req, res) => {
+	const { token, adminID } = req.body;
+
+	try {
+		const admin = await Admin.findOne({ username: adminID });
+
+		const verified = speakeasy.totp.verify({
+			secret: admin.secret,
+			encoding: 'base32',
+			token: token,
+		});
+
+		if (verified) {
+			res.json({ verified: true });
+		} else {
+			res.status(401).send({ message: 'Codigo invalido' });
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(500).send({ message: 'No se encontro el usuario.' });
+	}
+});
+router.post('/:adminID', cors(), async (req, res) => {
+	try {
+		const { tfa } = req.body;
+		const { adminID } = req.params;
+		const filter = { username: adminID };
+
+		const update = {
+			tfa: tfa,
+		};
+		const admins = await Admin.findOneAndUpdate(filter, update);
+		res.json(admins);
+	} catch (error) {
+		console.log(error);
+		res.status(500).send({ message: 'Error al activar 2FA' });
 	}
 });
 
@@ -44,9 +88,8 @@ router.post('/login', cors(), async (req, res) => {
 			return res
 				.status(401)
 				.send({ message: 'Usuario o contraseña incorrectas' });
-
 		res.status(200).send({
-			message: 'Inicio de sesion exitoso.',
+			message: 'Credenciales correctas.',
 		});
 	} catch (error) {
 		console.log(error);

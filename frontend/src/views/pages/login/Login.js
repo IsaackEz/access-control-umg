@@ -14,6 +14,10 @@ import {
   CFormInput,
   CInputGroup,
   CInputGroupText,
+  CModal,
+  CModalBody,
+  CModalHeader,
+  CModalTitle,
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -21,34 +25,71 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
   const [error, setError] = useState('')
+  const [visible, setVisible] = useState(false)
+  const [auth, setAuth] = useState({
+    token: '',
+  })
   const [data, setData] = useState({
     username: '',
     password: '',
   })
   const navigate = useNavigate()
+
   const onChange = ({ currentTarget: input }) => {
     setData({ ...data, [input.name]: input.value })
   }
-
+  const onChangeAuth = ({ currentTarget: input }) => {
+    setAuth({ ...auth, [input.name]: input.value })
+  }
   const onSubmit = async (e) => {
     e.preventDefault()
     try {
       const loginURL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/login'
-      const { data: res } = await axios.post(loginURL, data)
+      await axios.post(loginURL, data)
       const adminURL = process.env.REACT_APP_AXIOS_BASE_URL + `/admin/${data.username}`
       const userData = await axios.get(adminURL)
 
-      navigate('/dashboard')
-      console.log(res.message)
-      const cookies = new Cookies()
-      cookies.set('session', userData.data._id, { path: '/', maxAge: 3600, secure: true })
+      localStorage.setItem(
+        'adminData',
+        JSON.stringify({
+          id: userData.data._id,
+          username: userData.data.username,
+          name: userData.data.fullName,
+          tfa: userData.data.tfa,
+        }),
+      )
+      if (!userData.data.tfa) {
+        navigate('/dashboard')
+        const cookies = new Cookies()
+        cookies.set('session', userData.data._id, { path: '/', maxAge: 3600, secure: true })
+      }
+      setVisible(true)
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message)
       }
     }
   }
-
+  const onSubmitToken = async (e) => {
+    e.preventDefault()
+    try {
+      let token = localStorage.getItem('adminData')
+      token = JSON.parse(token)
+      const adminInfo = {
+        token: auth.token,
+        adminID: token.username,
+      }
+      const loginURL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/verify'
+      await axios.post(loginURL, adminInfo)
+      navigate('/dashboard')
+      const cookies = new Cookies()
+      cookies.set('session', token._id, { path: '/', maxAge: 3600, secure: true })
+    } catch (error) {
+      if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+        setError(error.response.data.message)
+      }
+    }
+  }
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -92,6 +133,7 @@ const Login = () => {
                           Login
                         </CButton>
                       </CCol>
+
                       {/* <CCol xs={6} className="text-right">
                         <CButton color="link" className="px-0">
                           ¿Olvidaste tu contraseña?
@@ -106,6 +148,45 @@ const Login = () => {
           </CCol>
         </CRow>
       </CContainer>
+
+      <CModal alignment="center" visible={visible} onClose={() => setVisible(false)}>
+        <CModalHeader>
+          <CModalTitle>Codigo de Verificacion</CModalTitle>
+        </CModalHeader>
+        <CForm onSubmit={onSubmitToken}>
+          <CModalBody>
+            <p className="text-medium-emphasis">
+              Ingresa el codigo proporcionado por tu applicaicon
+            </p>
+            <CInputGroup className="mb-3">
+              <CInputGroupText>
+                <CIcon icon={cilLockLocked} />
+              </CInputGroupText>
+              <CFormInput
+                type="text"
+                onChange={onChangeAuth}
+                placeholder="Codigo"
+                name="token"
+                value={auth.token}
+              />
+            </CInputGroup>
+          </CModalBody>
+          <CRow>
+            <CCol xs={6}>
+              <CButton color="secondary" onClick={() => setVisible(false)}>
+                Cancelar
+              </CButton>
+            </CCol>
+            <CCol>
+              <CButton color="primary" className="px-4" type="submit">
+                Enviar
+              </CButton>
+            </CCol>
+
+            {error && <div>{error}</div>}
+          </CRow>
+        </CForm>
+      </CModal>
     </div>
   )
 }
