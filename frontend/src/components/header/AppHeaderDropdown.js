@@ -166,7 +166,7 @@ const AppHeaderDropdown = () => {
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>
-        <CDropdownItem href="#">
+        <CDropdownItem component="button">
           <CIcon icon={cilBell} className="me-2" />
           Notificaciones
           <CBadge color="info" className="ms-2">
@@ -175,11 +175,12 @@ const AppHeaderDropdown = () => {
         </CDropdownItem>
 
         <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
+        <CDropdownItem component="button">
           <CIcon icon={cilUser} className="me-2" />
           Perfil
         </CDropdownItem>
         <CDropdownItem
+          component="button"
           onClick={() => {
             setVisible(!visible)
           }}
@@ -193,8 +194,8 @@ const AppHeaderDropdown = () => {
           alignment="center"
           visible={visible}
           onClose={() => {
-            setVisible(visible)
-            setVisible2(visible2)
+            setVisible(false)
+            setVisible2(false)
             setAuth('')
           }}
         >
@@ -275,7 +276,6 @@ const AppHeaderDropdown = () => {
                                 Verificar
                               </CButton>
                             </CCol>
-
                             {error && <div>{error}</div>}
                           </CRow>
                         </CForm>
@@ -287,7 +287,6 @@ const AppHeaderDropdown = () => {
             )}
           </CModalBody>
         </CModal>
-
         <CDropdownDivider />
         <CDropdownItem onClick={logOut}>
           <CIcon icon={cilLockLocked} className="me-2" />
