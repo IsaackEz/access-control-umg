@@ -227,9 +227,13 @@
 .qrtoken {
   width: 50%;
   height: 50%;
-  margin: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .tokeninput {
+  margin-left: auto;
+  margin-right: auto;
   width: 40%;
 }

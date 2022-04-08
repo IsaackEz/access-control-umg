@@ -119,7 +119,7 @@ const AppHeaderDropdown = () => {
   }
 
   const enabledTFA = (
-    <CToast title="CoreUI for React.js">
+    <CToast title="2FA enabled">
       <CToastHeader close>
         <svg
           className="rounded me-2"
@@ -139,7 +139,7 @@ const AppHeaderDropdown = () => {
   )
 
   const disabledTFA = (
-    <CToast title="CoreUI for React.js">
+    <CToast title="2FA disbled">
       <CToastHeader close>
         <svg
           className="rounded me-2"
@@ -193,8 +193,8 @@ const AppHeaderDropdown = () => {
           alignment="center"
           visible={visible}
           onClose={() => {
-            setVisible(false)
-            setVisible2(false)
+            setVisible(visible)
+            setVisible2(visible2)
             setAuth('')
           }}
         >
@@ -240,46 +240,46 @@ const AppHeaderDropdown = () => {
                 <CRow>
                   <CCollapse visible={visible2}>
                     <CCard className="mt-3">
-                      <CCardBody>Escanea el codigo o ingresalo manualmente</CCardBody>
-                      <CRow>
-                        <img src={src} alt="" className="qrtoken" />
-                      </CRow>
+                      <CCardBody>
+                        <div className="qrtoken">
+                          <h5>Escanea el codigo</h5>
+                          <img src={src} alt="" />
+                        </div>
+                        <CForm onSubmit={onSubmitToken}>
+                          <CRow>
+                            <CCol className="mb-4">
+                              <CFormInput
+                                className="tokeninput"
+                                type="text"
+                                onChange={onChangeAuth}
+                                placeholder="Codigo"
+                                name="token"
+                              />
+                            </CCol>
+                          </CRow>
+                          <CRow>
+                            <CCol xs={8}>
+                              <CButton
+                                color="secondary"
+                                onClick={() => {
+                                  setVisible(false)
+                                  setVisible2(false)
+                                  setError('')
+                                }}
+                              >
+                                Cancelar
+                              </CButton>
+                            </CCol>
+                            <CCol lg="auto">
+                              <CButton color="primary" className="px-4" type="submit">
+                                Verificar
+                              </CButton>
+                            </CCol>
 
-                      <CForm onSubmit={onSubmitToken}>
-                        <CRow>
-                          <CCol>
-                            <CFormInput
-                              className="tokeninput"
-                              type="text"
-                              onChange={onChangeAuth}
-                              placeholder="Codigo"
-                              name="token"
-                              value={auth.token}
-                            />
-                          </CCol>
-                        </CRow>
-                        <CRow>
-                          <CCol xs={8}>
-                            <CButton
-                              color="secondary"
-                              onClick={() => {
-                                setVisible(false)
-                                setVisible2(false)
-                                setError('')
-                              }}
-                            >
-                              Cancelar
-                            </CButton>
-                          </CCol>
-                          <CCol lg="auto">
-                            <CButton color="primary" className="px-4" type="submit">
-                              Verificar
-                            </CButton>
-                          </CCol>
-
-                          {error && <div>{error}</div>}
-                        </CRow>
-                      </CForm>
+                            {error && <div>{error}</div>}
+                          </CRow>
+                        </CForm>
+                      </CCardBody>
                     </CCard>
                   </CCollapse>
                 </CRow>

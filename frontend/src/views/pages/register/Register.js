@@ -93,7 +93,6 @@ const Register = () => {
                       autoComplete="username"
                       name="username"
                       onChange={onChange}
-                      value={data.username}
                       required
                     />
                   </CInputGroup>
@@ -110,7 +109,6 @@ const Register = () => {
                       onFocus={handleOnFocus}
                       onBlur={handleOnBlur}
                       onKeyUp={handleOnKeyUp}
-                      value={data.password}
                       required
                     />
                   </CInputGroup>
@@ -132,7 +130,6 @@ const Register = () => {
                       autoComplete="fullName"
                       name="fullName"
                       onChange={onChange}
-                      value={data.fullName}
                       required
                     />
                   </CInputGroup>
@@ -144,7 +141,6 @@ const Register = () => {
                       autoComplete="email"
                       name="email"
                       onChange={onChange}
-                      value={data.email}
                       required
                     />
                     {error && <div>{error}</div>}
