@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import Cookies from 'universal-cookie'
+
 import {
   CButton,
   CCard,
@@ -17,6 +17,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser, cilAddressBook } from '@coreui/icons'
 import PWD from './PWDRequisite'
+import Auth from '../auth/Auth'
 
 const Register = () => {
   const [error, setError] = useState('')
@@ -64,10 +65,8 @@ const Register = () => {
     try {
       const URL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/signup'
       const { data: res } = await axios.post(URL, data)
-      navigate('/dashboard')
+      navigate('/usuarios')
       console.log(res.message)
-      const cookies = new Cookies()
-      cookies.set('session', 'auth', { path: '/', maxAge: 3600, secure: true })
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message)
@@ -155,6 +154,9 @@ const Register = () => {
                       Crear cuenta
                     </CButton>
                   </div>
+                  {/* <CCol>
+                    <Auth />
+                  </CCol> */}
                 </CForm>
               </CCardBody>
             </CCard>

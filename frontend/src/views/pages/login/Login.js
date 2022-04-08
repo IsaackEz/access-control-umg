@@ -33,12 +33,15 @@ const Login = () => {
   const onSubmit = async (e) => {
     e.preventDefault()
     try {
-      const URL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/login'
-      const { data: res } = await axios.post(URL, data)
+      const loginURL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/login'
+      const { data: res } = await axios.post(loginURL, data)
+      const adminURL = process.env.REACT_APP_AXIOS_BASE_URL + `/admin/${data.username}`
+      const userData = await axios.get(adminURL)
+
       navigate('/dashboard')
       console.log(res.message)
       const cookies = new Cookies()
-      cookies.set('session', 'auth', { path: '/', maxAge: 3600, secure: true })
+      cookies.set('session', userData.data._id, { path: '/', maxAge: 3600, secure: true })
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message)

@@ -15,7 +15,7 @@ const Tracing = require('@sentry/tracing');
 const port = process.env.PORT || 5000;
 const { connectDB } = require('./db');
 const app = express();
-
+app.use(cors());
 const server = createServer(app);
 const io = new Server(server, {
 	cors: {
@@ -27,7 +27,6 @@ const io = new Server(server, {
 	},
 });
 
-app.use(cors());
 app.use(bodyParser.json());
 
 connectDB;
@@ -44,9 +43,7 @@ Sentry.init({
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 
-io.on('connection', () => {
-	console.log('Connected to socket.io');
-});
+io.on('connection', () => {});
 
 app.use(function (req, res, next) {
 	req.io = io;

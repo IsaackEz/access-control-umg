@@ -4,8 +4,9 @@ const Admin = require('../../Models/Admin');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 
-router.get('/', cors(), (req, res) => {
-	Admin.find().then((admin) => res.json(admin));
+router.get('/:adminID', cors(), (req, res) => {
+	const { adminID } = req.params;
+	Admin.find({ username: adminID }).then((admin) => res.json(admin[0]));
 });
 
 router.post('/signup', cors(), async (req, res) => {
@@ -23,7 +24,7 @@ router.post('/signup', cors(), async (req, res) => {
 		res.status(201).send({ message: 'Administrador creado!' });
 	} catch (error) {
 		console.log(error);
-		res.status(500).send({ message: 'Error del servidor' });
+		res.status(500).send({ message: 'Error generado llave' });
 	}
 });
 
