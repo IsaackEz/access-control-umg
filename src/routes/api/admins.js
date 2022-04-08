@@ -24,7 +24,7 @@ router.post('/signup', cors(), async (req, res) => {
 		await new Admin({
 			...req.body,
 			password: hashPassword,
-			secret: secret.base32,
+			secret: secret,
 		}).save();
 		res.status(201).send({ message: 'Administrador creado!' });
 	} catch (error) {
@@ -33,14 +33,39 @@ router.post('/signup', cors(), async (req, res) => {
 	}
 });
 
+router.post('/login', cors(), async (req, res) => {
+	try {
+		const admin = await Admin.findOne({ username: req.body.username });
+
+		if (!admin)
+			return res
+				.status(401)
+				.send({ message: 'Usuario o contraseña incorrectas' });
+
+		const validPassword = await bcrypt.compare(
+			req.body.password,
+			admin.password
+		);
+
+		if (!validPassword)
+			return res
+				.status(401)
+				.send({ message: 'Usuario o contraseña incorrectas' });
+		res.status(200).send({
+			message: 'Credenciales correctas.',
+		});
+	} catch (error) {
+		res.status(500).send({ message: 'Error del servidor' });
+	}
+});
+
 router.post('/verify', cors(), async (req, res) => {
 	const { token, adminID } = req.body;
 
 	try {
 		const admin = await Admin.findOne({ username: adminID });
-
 		const verified = speakeasy.totp.verify({
-			secret: admin.secret,
+			secret: admin.secret.base32,
 			encoding: 'base32',
 			token: token,
 		});
@@ -69,31 +94,6 @@ router.post('/:adminID', cors(), async (req, res) => {
 	} catch (error) {
 		console.log(error);
 		res.status(500).send({ message: 'Error al activar 2FA' });
-	}
-});
-
-router.post('/login', cors(), async (req, res) => {
-	try {
-		const admin = await Admin.findOne({ username: req.body.username });
-		if (!admin)
-			return res
-				.status(401)
-				.send({ message: 'Usuario o contraseña incorrectas' });
-
-		const validPassword = await bcrypt.compare(
-			req.body.password,
-			admin.password
-		);
-		if (!validPassword)
-			return res
-				.status(401)
-				.send({ message: 'Usuario o contraseña incorrectas' });
-		res.status(200).send({
-			message: 'Credenciales correctas.',
-		});
-	} catch (error) {
-		console.log(error);
-		res.status(500).send({ message: 'Error del servidor' });
 	}
 });
 

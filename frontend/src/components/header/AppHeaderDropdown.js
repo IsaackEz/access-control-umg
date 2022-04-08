@@ -91,7 +91,7 @@ const AppHeaderDropdown = () => {
   const enableTFA = async () => {
     const adminURL = process.env.REACT_APP_AXIOS_BASE_URL + `/admin/${adminInfo.username}`
     const userData = await axios.get(adminURL)
-    QRCode.toDataURL(userData.data.secret).then(setSrc)
+    QRCode.toDataURL(userData.data.secret.otpauth_url).then(setSrc)
   }
 
   const disableTFA = async () => {
@@ -240,7 +240,7 @@ const AppHeaderDropdown = () => {
                 <CRow>
                   <CCollapse visible={visible2}>
                     <CCard className="mt-3">
-                      <CCardBody>Escanea el codigo</CCardBody>
+                      <CCardBody>Escanea el codigo o ingresalo manualmente</CCardBody>
                       <CRow>
                         <img src={src} alt="" className="qrtoken" />
                       </CRow>

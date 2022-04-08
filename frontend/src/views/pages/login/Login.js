@@ -83,7 +83,7 @@ const Login = () => {
       await axios.post(loginURL, adminInfo)
       navigate('/dashboard')
       const cookies = new Cookies()
-      cookies.set('session', token._id, { path: '/', maxAge: 3600, secure: true })
+      cookies.set('session', token.id, { path: '/', maxAge: 3600, secure: true })
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message)
