@@ -115,6 +115,7 @@ const AppHeaderDropdown = () => {
   const logOut = () => {
     const cookies = new Cookies()
     cookies.remove('session')
+    localStorage.removeItem('adminData')
     navigate('/login')
   }
 
