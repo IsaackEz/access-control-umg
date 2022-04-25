@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import axios from 'axios'
 import QRCode from 'qrcode'
+import PWD from '../../views/pages/register/PWDRequisite'
 
 import {
   CAvatar,
@@ -27,8 +28,18 @@ import {
   CModalHeader,
   CModalTitle,
   CRow,
+  CInputGroup,
+  CInputGroupText,
 } from '@coreui/react'
-import { cilBell, cilLockLocked, cilSettings, cilUser } from '@coreui/icons'
+import {
+  cilAddressBook,
+  cilBell,
+  cilLockLocked,
+  cilPencil,
+  cilSettings,
+  cilUser,
+  cilX,
+} from '@coreui/icons'
 
 import Cookies from 'universal-cookie'
 
@@ -43,9 +54,27 @@ const AppHeaderDropdown = () => {
   const [src, setSrc] = useState('')
   const [visible, setVisible] = useState(false)
   const [visible2, setVisible2] = useState(false)
+  const [profile, setProfile] = useState(false)
   const [auth, setAuth] = useState({
     token: '',
   })
+  const [errorR, setErrorR] = useState('')
+  const [pwdRequisite, setPWDRequisite] = useState(false)
+  const [check, setCheck] = useState({
+    lowerCase: false,
+    capsLetters: false,
+    num: false,
+    len: false,
+    specialChar: false,
+  })
+  const [data, setData] = useState({
+    username: '',
+    password: '',
+    fullName: '',
+    email: '',
+  })
+  const [newUsername, setNewUsername] = useState(true)
+
   const navigate = useNavigate()
 
   let adminInfo = localStorage.getItem('adminData')
@@ -159,11 +188,48 @@ const AppHeaderDropdown = () => {
     </CToast>
   )
 
+  // const handleOnKeyUp = (e) => {
+  //   const { value } = e.target
+  //   const capsLetters = /[A-Z]/.test(value)
+  //   const lowerCase = /[a-z]/.test(value)
+  //   const num = /[0-9]/.test(value)
+  //   const len = value.length >= 8
+  //   const specialChar = /[$-/:-?{-~!"^_`[\]]/.test(value)
+  //   setCheck({ capsLetters, lowerCase, num, len, specialChar })
+  // }
+
+  // const handleOnBlur = () => {
+  //   setPWDRequisite(false)
+  // }
+
+  // const handleOnFocus = () => {
+  //   setPWDRequisite(true)
+  // }
+
+  // const onChange = ({ currentTarget: input }) => {
+  //   setData({ ...data, [input.name]: input.value })
+  // }
+
+  const updateUsername = () => {}
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      const URL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/signup'
+      const { data: res } = await axios.post(URL, data)
+      navigate('/usuarios')
+      console.log(res.message)
+    } catch (error) {
+      if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+        setError(error.response.data.message)
+      }
+    }
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <CAvatar src={admin} size="md" />
-        {adminInfo.username}
+        <CAvatar src={admin} size="md" /> {adminInfo.username}
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>
@@ -176,7 +242,12 @@ const AppHeaderDropdown = () => {
         </CDropdownItem>
 
         <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-        <CDropdownItem component="button">
+        <CDropdownItem
+          component="button"
+          onClick={() => {
+            setProfile(!profile)
+          }}
+        >
           <CIcon icon={cilUser} className="me-2" />
           Perfil
         </CDropdownItem>
@@ -288,12 +359,80 @@ const AppHeaderDropdown = () => {
             )}
           </CModalBody>
         </CModal>
+        <CModal
+          backdrop="static"
+          alignment="center"
+          visible={profile}
+          onClose={() => {
+            setProfile(false)
+          }}
+        >
+          <CModalHeader>
+            <CModalTitle>Perfil</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <CForm onSubmit={onSubmit}>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilUser} />
+                </CInputGroupText>
+                <CFormInput
+                  name="username"
+                  placeholder={adminInfo.username}
+                  readOnly={newUsername}
+                />
+                <CButton
+                  type="button"
+                  color="primary"
+                  variant="outline"
+                  onClick={() => {
+                    setNewUsername(!newUsername)
+                  }}
+                >
+                  {newUsername ? <CIcon icon={cilPencil} /> : <CIcon icon={cilX} />}
+                </CButton>
+              </CInputGroup>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilLockLocked} />
+                </CInputGroupText>
+                <CFormInput readOnly type="password" name="password" value="00000000000" />
+                <CButton type="button" color="primary" variant="outline">
+                  <CIcon icon={cilPencil} />
+                </CButton>
+              </CInputGroup>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>
+                  <CIcon icon={cilAddressBook} />
+                </CInputGroupText>
+                <CFormInput readOnly name="fullName" value={adminInfo.name} />
+                <CButton type="button" color="primary" variant="outline">
+                  <CIcon icon={cilPencil} />
+                </CButton>
+              </CInputGroup>
+              <CInputGroup className="mb-3">
+                <CInputGroupText>@</CInputGroupText>
+                <CFormInput readOnly name="email" value={adminInfo.email} />
+                <CButton type="button" color="primary" variant="outline">
+                  <CIcon icon={cilPencil} />
+                </CButton>
+                {errorR && <div>{errorR}</div>}
+              </CInputGroup>
+              <div className="d-grid">
+                <CButton color="success" type="submit">
+                  Editar cuenta
+                </CButton>
+              </div>
+            </CForm>
+          </CModalBody>
+        </CModal>
         <CDropdownDivider />
         <CDropdownItem onClick={logOut}>
           <CIcon icon={cilLockLocked} className="me-2" />
           Cerrar Sesion
         </CDropdownItem>
       </CDropdownMenu>
+
       <CToaster ref={toaster} push={toast} placement="bottom-start" />
     </CDropdown>
   )

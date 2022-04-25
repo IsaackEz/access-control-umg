@@ -18,8 +18,8 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Traffic',
-    to: '/traffic',
+    name: 'Trafico',
+    to: '/trafico',
     icon: <CIcon icon={cilGraph} customClassName="nav-icon" />,
   },
   {

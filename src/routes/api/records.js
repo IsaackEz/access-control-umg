@@ -6,7 +6,7 @@ const Record = require('../../Models/Records');
 
 router.get('/', cors(), async (req, res) => {
 	try {
-		const records = await Record.find().sort({ checkInTime: -1 });
+		const records = await Record.find().sort({ checkInTime: 'desc' });
 		res.json(records);
 	} catch (error) {
 		console.log({ error });
@@ -22,6 +22,24 @@ router.get('/lastlocation', cors(), async (req, res) => {
 			users.forEach((user) => {
 				records.push({
 					userID: user.userID,
+					records: user.records[user.records.length - 1],
+				});
+			});
+		});
+		res.json(records);
+	} catch (error) {
+		console.log({ error });
+	}
+});
+
+router.get('/lastseen', cors(), async (req, res) => {
+	try {
+		records = [];
+		await Record.find().then((users) => {
+			users.forEach((user) => {
+				records.push({
+					userID: user.userID,
+					checkOutTime: user.checkOutTime,
 					records: user.records[user.records.length - 1],
 				});
 			});

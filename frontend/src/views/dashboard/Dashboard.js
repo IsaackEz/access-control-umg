@@ -16,6 +16,8 @@ import {
   CCardBody,
   CCardHeader,
   CCol,
+  CProgress,
+  CProgressBar,
   CRow,
   CTable,
   CTableBody,
@@ -160,25 +162,38 @@ const Dashboard = () => {
     return count
   }
 
-  const countUsers = () => {
+  const countAllUsers = () => {
+    let countStu = 0
+    let countTea = 0
+    userData.forEach((userD) => {
+      if (userD.userRol === 'Alumno' || userD.userRol === 'Residente') {
+        countStu++
+      } else if (userD.userRol === 'Maestro') {
+        countTea++
+      }
+    })
+    return { countStu, countTea }
+  }
+
+  const countUsersIn = () => {
     let countStu = 0
     let countTea = 0
     let countInv = 0
+    let countRes = 0
     userData.forEach((userD) => {
       return records.forEach((record) => {
-        if (
-          userD.userID === record.userID &&
-          (userD.userRol === 'Alumno' || userD.userRol === 'Residente')
-        ) {
+        if (userD.userID === record.userID && userD.userRol === 'Alumno') {
           countStu++
         } else if (userD.userID === record.userID && userD.userRol === 'Maestro') {
           countTea++
         } else if (userD.userID === record.userID && userD.userRol === 'Invitado') {
           countInv++
+        } else if (userD.userID === record.userID && userD.userRol === 'Residente') {
+          countRes++
         }
       })
     })
-    return { countStu, countTea, countInv }
+    return { countStu, countTea, countInv, countRes }
   }
 
   const countInPlaces = () => {
@@ -236,7 +251,7 @@ const Dashboard = () => {
   ]
 
   const getNames = () => {
-    let fullRecords = recordsAll.slice()
+    let fullRecords = JSON.parse(JSON.stringify(recordsAll))
     userData.forEach((names) => {
       fullRecords.forEach((record) => {
         if (names.userID === record.userID) {
@@ -262,6 +277,106 @@ const Dashboard = () => {
     return time.join('')
   }
 
+  const countPlacePercent = () => {
+    const priIn = (countInPlaces().countPri / records.length) * 100
+    const resIn = (countInPlaces().countRes / records.length) * 100
+    const monIn = (countInPlaces().countMon / records.length) * 100
+    return { priIn, resIn, monIn }
+  }
+
+  const getDayName = () => {
+    let countMondaySt = 0
+    let countTuesdaySt = 0
+    let countWednesdaySt = 0
+    let countThursdaySt = 0
+    let countFridaySt = 0
+    let countSaturdaySt = 0
+    let countSundaySt = 0
+
+    let countMondayTea = 0
+    let countTuesdayTea = 0
+    let countWednesdayTea = 0
+    let countThursdayTea = 0
+    let countFridayTea = 0
+    let countSaturdayTea = 0
+    let countSundayTea = 0
+    const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    recordsAll.forEach((record) => {
+      userData.forEach((userD) => {
+        if (userD.userID === record.userID) {
+          if (userD.userRol === 'Residente' || userD.userRol === 'Alumno') {
+            let d = new Date(record.checkInTime)
+            if (weekday[d.getDay()] === 'Monday') {
+              countMondaySt++
+            } else if (weekday[d.getDay()] === 'Tuesday') {
+              countTuesdaySt++
+            } else if (weekday[d.getDay()] === 'Wednesday') {
+              countWednesdaySt++
+            } else if (weekday[d.getDay()] === 'Thursday') {
+              countThursdaySt++
+            } else if (weekday[d.getDay()] === 'Friday') {
+              countFridaySt++
+            } else if (weekday[d.getDay()] === 'Saturday') {
+              countSaturdaySt++
+            } else if (weekday[d.getDay()] === 'Sunday') {
+              countSundaySt++
+            }
+          } else if (userD.userRol === 'Maestro') {
+            let d = new Date(record.checkInTime)
+            if (weekday[d.getDay()] === 'Monday') {
+              countMondayTea++
+            } else if (weekday[d.getDay()] === 'Tuesday') {
+              countTuesdayTea++
+            } else if (weekday[d.getDay()] === 'Wednesday') {
+              countWednesdayTea++
+            } else if (weekday[d.getDay()] === 'Thursday') {
+              countThursdayTea++
+            } else if (weekday[d.getDay()] === 'Friday') {
+              countFridayTea++
+            } else if (weekday[d.getDay()] === 'Saturday') {
+              countSaturdayTea++
+            } else if (weekday[d.getDay()] === 'Sunday') {
+              countSundayTea++
+            }
+          }
+        }
+      })
+    })
+
+    const percentMondaySt = (countMondaySt / recordsAll.length) * 100
+    const percentTuesdaySt = (countTuesdaySt / recordsAll.length) * 100
+    const percentWednesdaySt = (countWednesdaySt / recordsAll.length) * 100
+    const percentThursdaySt = (countThursdaySt / recordsAll.length) * 100
+    const percentFridaySt = (countFridaySt / recordsAll.length) * 100
+    const percentSaturdaySt = (countSaturdaySt / recordsAll.length) * 100
+    const percentSundaySt = (countSundaySt / recordsAll.length) * 100
+
+    const percentMondayTea = (countMondayTea / recordsAll.length) * 100
+    const percentTuesdayTea = (countTuesdayTea / recordsAll.length) * 100
+    const percentWednesdayTea = (countWednesdayTea / recordsAll.length) * 100
+    const percentThursdayTea = (countThursdayTea / recordsAll.length) * 100
+    const percentFridayTea = (countFridayTea / recordsAll.length) * 100
+    const percentSaturdayTea = (countSaturdayTea / recordsAll.length) * 100
+    const percentSundayTea = (countSundayTea / recordsAll.length) * 100
+
+    return {
+      percentMondaySt,
+      percentTuesdaySt,
+      percentWednesdaySt,
+      percentThursdaySt,
+      percentFridaySt,
+      percentSaturdaySt,
+      percentSundaySt,
+
+      percentMondayTea,
+      percentTuesdayTea,
+      percentWednesdayTea,
+      percentThursdayTea,
+      percentFridayTea,
+      percentSaturdayTea,
+      percentSundayTea,
+    }
+  }
   return (
     <>
       <CCard className="mb-2">
@@ -344,7 +459,7 @@ const Dashboard = () => {
                         </div>
                         <CRow>
                           <CCol lg={2}>
-                            {data.userRol === 'Alumno' || data.userRol === 'Residente' ? (
+                            {data.userRol === 'Alumno' ? (
                               <img className="imgUser" src={student} alt="" />
                             ) : data.userRol === 'Maestro' ? (
                               <img className="imgUser" src={teacher} alt="" />
@@ -514,28 +629,45 @@ const Dashboard = () => {
         </CCardBody>
       </CCard>
       <CRow>
-        <CCol className="user-stats" lg={8}>
+        <CCol className="user-stats" lg={6}>
           <CCard className="mb-4">
             <CCardBody>
               <h5 className="card-title mb-2">Estadistica de usuarios</h5>
               <hr className="mt-0" />
               <CRow>
-                <CCol sm={6} lg={4}>
+                <CCol lg={6}>
                   <CCardBody>
-                    <div className="widget-stats p-2">
+                    <div className="widget-stats p-1">
                       <CRow>
                         <div className="col-4">
                           <img className="imgUserStat" src={student} alt="" />
                         </div>
                         <div className="col-auto m-2">
-                          <h2 className="userTextLabel">{countUsers().countStu}</h2>
+                          <h2 className="userTextLabel">{countUsersIn().countStu}</h2>
                           <p className="labelRol">Alumnos</p>
                         </div>
                       </CRow>
                     </div>
                   </CCardBody>
                 </CCol>
-                <CCol sm={6} lg={4}>
+                <CCol lg={6}>
+                  <CCardBody>
+                    <div className="widget-stats p-2">
+                      <CRow>
+                        <div className="col-4">
+                          <img className="imgUserStat" src={foreign} alt="" />
+                        </div>
+                        <div className="col-auto m-2">
+                          <h2 className="userTextLabel">{countUsersIn().countRes}</h2>
+                          <p className="labelRol">Residente</p>
+                        </div>
+                      </CRow>
+                    </div>
+                  </CCardBody>
+                </CCol>
+              </CRow>
+              <CRow>
+                <CCol lg={6}>
                   <CCardBody>
                     <div className="widget-stats p-2">
                       <CRow>
@@ -543,14 +675,14 @@ const Dashboard = () => {
                           <img className="imgUserStat" src={teacher} alt="" />
                         </div>
                         <div className="col-auto m-2">
-                          <h2 className="userTextLabel">{countUsers().countTea}</h2>
+                          <h2 className="userTextLabel">{countUsersIn().countTea}</h2>
                           <p className="labelRol">Maestros</p>
                         </div>
                       </CRow>
                     </div>
                   </CCardBody>
                 </CCol>
-                <CCol sm={6} lg={4}>
+                <CCol lg={6}>
                   <CCardBody>
                     <div className="widget-stats p-2">
                       <CRow>
@@ -558,7 +690,7 @@ const Dashboard = () => {
                           <img className="imgUserStat" src={guest} alt="" />
                         </div>
                         <div className="col-auto m-2">
-                          <h2 className="userTextLabel">{countUsers().countInv}</h2>
+                          <h2 className="userTextLabel">{countUsersIn().countInv}</h2>
                           <p className="labelRol">Invitados</p>
                         </div>
                       </CRow>
@@ -570,31 +702,31 @@ const Dashboard = () => {
           </CCard>
         </CCol>
         <CCol className="in-out" lg={4}>
-          <CCard className="mb-4">
+          <CCard>
             <CCardBody>
               <h5 className="card-title mb-2">Entradas</h5>
               <hr className="mt-0" />
               <CRow>
-                <CCol sm={10}>
+                <CCol>
                   <p>Puerta Principal</p>
                 </CCol>
-                <CCol>
+                <CCol lg="auto">
                   <span className="nUserLocation">{countInPlaces().countPri}</span>
                 </CCol>
               </CRow>
               <CRow>
-                <CCol sm={10}>
+                <CCol>
                   <p>C. Montemorelos</p>
                 </CCol>
-                <CCol>
+                <CCol lg="auto">
                   <span className="nUserLocation">{countInPlaces().countMon}</span>
                 </CCol>
               </CRow>
               <CRow>
-                <CCol sm={10}>
+                <CCol>
                   <p>Residencias</p>
                 </CCol>
-                <CCol>
+                <CCol lg="auto">
                   <span className="nUserLocation">{countInPlaces().countRes}</span>
                 </CCol>
               </CRow>
@@ -614,55 +746,107 @@ const Dashboard = () => {
       </CCard>
 
       <CRow>
-        <CCol xs>
+        <CCol lg={8}>
           <CCard className="mb-4">
-            <CCardHeader>Traffic {' & '} Sales</CCardHeader>
+            <CCardHeader>Trafico</CCardHeader>
             <CCardBody>
               <CRow>
-                <CCol xs={12} md={6} xl={6}>
+                <CCol lg={18}>
                   <CRow>
                     <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-info py-1 px-3">
-                        <div className="text-medium-emphasis small">New Clients</div>
-                        <div className="fs-5 fw-semibold">9,123</div>
-                      </div>
-                    </CCol>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Recurring Clients</div>
-                        <div className="fs-5 fw-semibold">22,643</div>
-                      </div>
-                    </CCol>
-                  </CRow>
-
-                  <hr className="mt-0" />
-                </CCol>
-
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol sm={6}>
-                      <div className="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Pageviews</div>
-                        <div className="fs-5 fw-semibold">78,623</div>
+                      <div className="border-start border-start-4 border-start-primary py-1 px-3">
+                        <div className="text-medium-emphasis small">Alumnos</div>
+                        <div className="fs-5 fw-semibold">{countAllUsers().countStu}</div>
                       </div>
                     </CCol>
                     <CCol sm={6}>
                       <div className="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-                        <div className="text-medium-emphasis small">Organic</div>
-                        <div className="fs-5 fw-semibold">49,123</div>
+                        <div className="text-medium-emphasis small">Maestros</div>
+                        <div className="fs-5 fw-semibold">{countAllUsers().countTea}</div>
                       </div>
                     </CCol>
                   </CRow>
 
                   <hr className="mt-0" />
 
-                  <div className="mb-5"></div>
+                  <p>Lunes</p>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar value={Math.floor(getDayName().percentMondaySt)}></CProgressBar>
+                  </CProgress>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar
+                      color="success"
+                      value={Math.floor(getDayName().percentMondayTea)}
+                    ></CProgressBar>
+                  </CProgress>
+                  <p>Martes</p>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar value={Math.floor(getDayName().percentTuesdaySt)}></CProgressBar>
+                  </CProgress>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar
+                      color="success"
+                      value={Math.floor(getDayName().percentTuesdayTea)}
+                    ></CProgressBar>
+                  </CProgress>
+                  <p>Miercoles</p>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar
+                      value={Math.floor(getDayName().percentWednesdaySt)}
+                    ></CProgressBar>
+                  </CProgress>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar
+                      color="success"
+                      value={Math.floor(getDayName().percentWednesdayTea)}
+                    ></CProgressBar>
+                  </CProgress>
+                  <p>Jueves</p>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar value={Math.floor(getDayName().percentThursdaySt)}></CProgressBar>
+                  </CProgress>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar
+                      color="success"
+                      value={Math.floor(getDayName().percentThursdayTea)}
+                    ></CProgressBar>
+                  </CProgress>
+                  <p>Viernes</p>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar value={Math.floor(getDayName().percentFridaySt)}></CProgressBar>
+                  </CProgress>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar
+                      color="success"
+                      value={Math.floor(getDayName().percentFridayTea)}
+                    ></CProgressBar>
+                  </CProgress>
+                  <p>Sabado</p>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar value={Math.floor(getDayName().percentSaturdaySt)}></CProgressBar>
+                  </CProgress>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar
+                      color="success"
+                      value={Math.floor(getDayName().percentSaturdayTea)}
+                    ></CProgressBar>
+                  </CProgress>
+                  <p>Domingo</p>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar value={Math.floor(getDayName().percentSundaySt)}></CProgressBar>
+                  </CProgress>
+                  <CProgress height={3} className="mb-1">
+                    <CProgressBar
+                      color="success"
+                      value={Math.floor(getDayName().percentSundayTea)}
+                    ></CProgressBar>
+                  </CProgress>
                 </CCol>
               </CRow>
 
               <br />
 
-              <CTable align="middle" className="mb-0 border" hover responsive>
+              {/* <CTable align="middle" className="mb-0 border" hover responsive>
                 <CTableHead color="light">
                   <CTableRow>
                     <CTableHeaderCell className="text-center">
@@ -676,7 +860,79 @@ const Dashboard = () => {
                   </CTableRow>
                 </CTableHead>
                 <CTableBody></CTableBody>
-              </CTable>
+              </CTable> */}
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol lg={4}>
+          <CCard className="mb-4">
+            <CCardHeader>Estadistica</CCardHeader>
+            <CCardBody>
+              <CRow>
+                <CCol lg={18}>
+                  <CRow>
+                    <CCol>
+                      <p>Hombres</p>
+                    </CCol>
+                    <CCol lg="auto">
+                      <p>{Math.floor(countPlacePercent().priIn)}%</p>
+                    </CCol>
+                  </CRow>
+                  <CProgress height={8} className="mb-5">
+                    <CProgressBar value={25}></CProgressBar>
+                  </CProgress>
+
+                  <CRow>
+                    <CCol>
+                      <p>Mujeres</p>
+                    </CCol>
+                    <CCol lg="auto">
+                      <p>{Math.floor(countPlacePercent().priIn)}%</p>
+                    </CCol>
+                  </CRow>
+                  <CProgress height={8} className="mb-5">
+                    <CProgressBar color="danger" value={25}></CProgressBar>
+                  </CProgress>
+
+                  <hr className="mt-0" />
+
+                  <CRow>
+                    <CCol>
+                      <p>Entrada Principal</p>
+                    </CCol>
+                    <CCol lg="auto">
+                      <p>{Math.floor(countPlacePercent().priIn)}%</p>
+                    </CCol>
+                  </CRow>
+                  <CProgress height={7} className="mb-5">
+                    <CProgressBar color="info" value={countPlacePercent().priIn}></CProgressBar>
+                  </CProgress>
+
+                  <CRow>
+                    <CCol>
+                      <p>Residencias</p>
+                    </CCol>
+                    <CCol lg="auto">
+                      <p>{Math.floor(countPlacePercent().resIn)}%</p>
+                    </CCol>
+                  </CRow>
+                  <CProgress height={7} className="mb-5">
+                    <CProgressBar color="success" value={countPlacePercent().resIn}></CProgressBar>
+                  </CProgress>
+
+                  <CRow>
+                    <CCol>
+                      <p>C. Montemorelos</p>
+                    </CCol>
+                    <CCol lg="auto">
+                      <p>{Math.floor(countPlacePercent().monIn)}%</p>
+                    </CCol>
+                  </CRow>
+                  <CProgress height={7} className="mb-5">
+                    <CProgressBar color="warning" value={countPlacePercent().monIn}></CProgressBar>
+                  </CProgress>
+                </CCol>
+              </CRow>
             </CCardBody>
           </CCard>
         </CCol>

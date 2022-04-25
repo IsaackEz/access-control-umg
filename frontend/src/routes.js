@@ -10,7 +10,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/historial', name: 'Historial', element: Historial },
-  { path: '/traffic', name: 'Traffic', element: Traffic },
+  { path: '/trafico', name: 'Trafico', element: Traffic },
   { path: '/usuarios', name: 'Usuarios', element: Usuarios },
   { path: '*', name: '404', element: Page404 },
 ]
