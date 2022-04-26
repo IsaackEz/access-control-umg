@@ -377,6 +377,21 @@ const Dashboard = () => {
       percentSundayTea,
     }
   }
+
+  const getSexPercent = () => {
+    let countMale = 0
+    let countFem = 0
+    userData.forEach((user) => {
+      if (user.sex === 'Hombre') {
+        countMale++
+      } else if (user.sex === 'Mujer') {
+        countFem++
+      }
+    })
+    const malePercent = (countMale / userData.length) * 100
+    const femalePercent = (countFem / userData.length) * 100
+    return { malePercent, femalePercent }
+  }
   return (
     <>
       <CCard className="mb-2">
@@ -875,11 +890,11 @@ const Dashboard = () => {
                       <p>Hombres</p>
                     </CCol>
                     <CCol lg="auto">
-                      <p>{Math.floor(countPlacePercent().priIn)}%</p>
+                      <p>{Math.floor(getSexPercent().malePercent)}%</p>
                     </CCol>
                   </CRow>
                   <CProgress height={8} className="mb-5">
-                    <CProgressBar value={25}></CProgressBar>
+                    <CProgressBar value={getSexPercent().malePercent}></CProgressBar>
                   </CProgress>
 
                   <CRow>
@@ -887,11 +902,14 @@ const Dashboard = () => {
                       <p>Mujeres</p>
                     </CCol>
                     <CCol lg="auto">
-                      <p>{Math.floor(countPlacePercent().priIn)}%</p>
+                      <p>{Math.floor(getSexPercent().femalePercent)}%</p>
                     </CCol>
                   </CRow>
                   <CProgress height={8} className="mb-5">
-                    <CProgressBar color="danger" value={25}></CProgressBar>
+                    <CProgressBar
+                      color="danger"
+                      value={getSexPercent().femalePercent}
+                    ></CProgressBar>
                   </CProgress>
 
                   <hr className="mt-0" />
