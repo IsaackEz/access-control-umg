@@ -81,7 +81,7 @@ const Tables = () => {
   ]
 
   const getNames = () => {
-    let fullRecords = recordsAll.slice()
+    let fullRecords = JSON.parse(JSON.stringify(recordsAll))
     userData.forEach((names) => {
       fullRecords.forEach((record) => {
         if (names.userID === record.userID) {
@@ -114,7 +114,7 @@ const Tables = () => {
           <h5 className="card-title mb-2">Historial</h5>
           <hr className="mt-0" />
           <div className="containerTable">
-            <DataTable columns={columns} data={getNames()} pagination rowsPerPage={15} responsive />
+            <DataTable columns={columns} data={getNames()} pagination responsive />
           </div>
         </CCardBody>
       </CCard>
