@@ -7,32 +7,16 @@ import { TimePicker } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import esLocale from 'date-fns/locale/es'
 import geoJSON from '../../geojson'
-import DataTable from 'react-data-table-component'
-
+import Records from '../records/Records'
 import { io } from 'socket.io-client'
 
-import {
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CProgress,
-  CProgressBar,
-  CRow,
-  CTable,
-  CTableBody,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
-} from '@coreui/react'
-
-import CIcon from '@coreui/icons-react'
-import { cilPeople } from '@coreui/icons'
+import { CCard, CCardBody, CCardHeader, CCol, CProgress, CProgressBar, CRow } from '@coreui/react'
 
 import student from 'src/assets/images/user/student.png'
 import teacher from 'src/assets/images/user/teacher.png'
 import guest from 'src/assets/images/user/guest.png'
 import foreign from 'src/assets/images/user/foreign.png'
+import { CChart } from '@coreui/react-chartjs'
 
 const Dashboard = () => {
   const tileURL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -182,14 +166,16 @@ const Dashboard = () => {
     let countRes = 0
     userData.forEach((userD) => {
       return records.forEach((record) => {
-        if (userD.userID === record.userID && userD.userRol === 'Alumno') {
-          countStu++
-        } else if (userD.userID === record.userID && userD.userRol === 'Maestro') {
-          countTea++
-        } else if (userD.userID === record.userID && userD.userRol === 'Invitado') {
-          countInv++
-        } else if (userD.userID === record.userID && userD.userRol === 'Residente') {
-          countRes++
+        if (userD.userID === record.userID) {
+          if (userD.userRol === 'Alumno') {
+            countStu++
+          } else if (userD.userRol === 'Maestro') {
+            countTea++
+          } else if (userD.userRol === 'Invitado') {
+            countInv++
+          } else if (userD.userRol === 'Residente') {
+            countRes++
+          }
         }
       })
     })
@@ -212,75 +198,26 @@ const Dashboard = () => {
     return { countPri, countRes, countMon }
   }
 
-  const columns = [
-    {
-      name: 'Nombre',
-      selector: (row) => row.fullName,
-      sortable: true,
-    },
-    {
-      name: 'Usuario',
-      selector: (row) => row.userID,
-      sortable: true,
-    },
-    {
-      name: 'Rol',
-      selector: (row) => row.userRol,
-      sortable: true,
-    },
-    {
-      name: 'Lugar de entrada',
-      selector: (row) => row.checkInPlace,
-      sortable: true,
-    },
-    {
-      name: 'Hora de entrada',
-      selector: (row) => row.checkInTime,
-      sortable: true,
-    },
-    {
-      name: 'Lugar de salida',
-      selector: (row) => row.checkOutPlace,
-      sortable: true,
-    },
-    {
-      name: 'Hora de salida',
-      selector: (row) => row.checkOutTime,
-      sortable: true,
-    },
-  ]
-
-  const getNames = () => {
-    let fullRecords = JSON.parse(JSON.stringify(recordsAll))
-    userData.forEach((names) => {
-      fullRecords.forEach((record) => {
-        if (names.userID === record.userID) {
-          record['fullName'] = names.name + ' ' + names.lastname
-          record['userRol'] = names.userRol
-          record['checkInTime'] = tConvert(record.checkInTime.slice(11, 19))
-          if (record.checkOutTime != null) {
-            record['checkOutTime'] = tConvert(record.checkOutTime.slice(11, 19))
-          }
-        }
-      })
+  const countAllPlaces = () => {
+    let countPri = 0
+    let countRes = 0
+    let countMon = 0
+    recordsAll.forEach((record) => {
+      if (record.checkInPlace === 'C. Montemorelos') {
+        countMon++
+      } else if (record.checkInPlace === 'Puerta Principal') {
+        countPri++
+      } else if (record.checkInPlace === 'Residencias') {
+        countRes++
+      }
     })
-    return fullRecords
-  }
-
-  const tConvert = (time) => {
-    time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time]
-    if (time.length > 1) {
-      time = time.slice(1)
-      time[5] = +time[0] < 12 ? ' AM' : ' PM'
-      time[0] = +time[0] % 12 || 12
-    }
-    return time.join('')
+    return { countPri, countRes, countMon }
   }
 
   const countPlacePercent = () => {
-    const priIn = (countInPlaces().countPri / records.length) * 100
-    const resIn = (countInPlaces().countRes / records.length) * 100
-    const monIn = (countInPlaces().countMon / records.length) * 100
+    const priIn = (countAllPlaces().countPri / recordsAll.length) * 100
+    const resIn = (countAllPlaces().countRes / recordsAll.length) * 100
+    const monIn = (countAllPlaces().countMon / recordsAll.length) * 100
     return { priIn, resIn, monIn }
   }
 
@@ -391,6 +328,40 @@ const Dashboard = () => {
     const malePercent = (countMale / userData.length) * 100
     const femalePercent = (countFem / userData.length) * 100
     return { malePercent, femalePercent }
+  }
+
+  const getPlacePercent = (place) => {
+    let countPlace = 0
+    recordsAll.forEach((record) => {
+      record.records.forEach((recIn) => {
+        if (record.checkInPlace === place || recIn.recordInPlace === place) {
+          countPlace++
+        }
+      })
+    })
+    return countPlace
+  }
+
+  const getColorPlace = (place) => {
+    let colorPlace
+    if (place === 'Salon 304') {
+      colorPlace = 'primary'
+    } else if (place === 'Residencias') {
+      colorPlace = 'success'
+    } else if (place === 'Salon 203') {
+      colorPlace = 'danger'
+    } else if (place === 'Salon 113') {
+      colorPlace = 'info'
+    }
+
+    return colorPlace
+  }
+  const getPieChartCount = () => {
+    const S304 = getPlacePercent('Salon 304')
+    const Resi = getPlacePercent('Residencias')
+    const S203 = getPlacePercent('Salon 203')
+    const S113 = getPlacePercent('Salon 113')
+    return { S304, Resi, S203, S113 }
   }
   return (
     <>
@@ -749,17 +720,9 @@ const Dashboard = () => {
           </CCard>
         </CCol>
       </CRow>
-
-      <CCard className=" mb-4">
-        <CCardBody>
-          <h5 className="card-title mb-2">Historial</h5>
-          <hr className="mt-0" />
-          <div className="containerTable">
-            <DataTable columns={columns} data={getNames()} pagination responsive />
-          </div>
-        </CCardBody>
-      </CCard>
-
+      <CRow className="ms-1">
+        <Records />
+      </CRow>
       <CRow>
         <CCol lg={8}>
           <CCard className="mb-4">
@@ -949,6 +912,62 @@ const Dashboard = () => {
                   <CProgress height={7} className="mb-5">
                     <CProgressBar color="warning" value={countPlacePercent().monIn}></CProgressBar>
                   </CProgress>
+                </CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+      <CRow>
+        <CCol lg={8}>
+          <CCard className="mb-4">
+            <CCardHeader>Flujo de Accesos</CCardHeader>
+            <CCardBody>
+              <CRow>
+                <CCol lg={18}>
+                  {geoJSON.features.slice(1, 5).map((list, key) => {
+                    return (
+                      <div className="userItem mb-3" key={key}>
+                        <div className="userItemLoc mt-3">
+                          <p>{list.properties.name}</p>
+                          <CProgress height={10} className="mb-1">
+                            <CProgressBar
+                              color={getColorPlace(list.properties.name)}
+                              value={getPlacePercent(list.properties.name)}
+                            ></CProgressBar>
+                          </CProgress>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <CCol lg={4}>
+          <CCard className="mb-4">
+            <CCardHeader>Uso de instalaciones</CCardHeader>
+            <CCardBody>
+              <CRow>
+                <CCol lg={9}>
+                  <CChart
+                    type="doughnut"
+                    data={{
+                      labels: ['Salon 304', 'Residencias', 'Salon 203', 'Salon 113'],
+                      datasets: [
+                        {
+                          backgroundColor: ['#321fdb', '#2eb85c', '#e55353', '#3399ff'],
+                          data: [
+                            getPieChartCount().S304,
+                            getPieChartCount().Resi,
+                            getPieChartCount().S203,
+                            getPieChartCount().S113,
+                          ],
+                        },
+                      ],
+                    }}
+                  />
                 </CCol>
               </CRow>
             </CCardBody>
