@@ -29,7 +29,7 @@ const Tables = () => {
   const [error, setError] = useState('')
   const [data, setData] = useState({
     userID: '',
-    userRole: '',
+    userRol: '',
     name: '',
     lastname: '',
     email: '',
