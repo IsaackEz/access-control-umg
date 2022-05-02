@@ -3,6 +3,7 @@ const router = express.Router();
 const cors = require('cors');
 
 const Record = require('../../Models/Records');
+const User = require('../../Models/User');
 
 router.get('/', cors(), async (req, res) => {
 	try {
@@ -55,7 +56,17 @@ router.get('/filter', cors(), async (req, res) => {
 		const records = await Record.find({
 			checkOutTime: '',
 		}).sort({ checkInTime: -1 });
-		res.json(records);
+		let recordFilter = JSON.parse(JSON.stringify(records));
+		await User.find().then((users) => {
+			users.forEach((user) => {
+				recordFilter.forEach((record) => {
+					if (user.userID == record.userID) {
+						record['userRol'] = user.userRol;
+					}
+				});
+			});
+		});
+		res.json(recordFilter);
 	} catch (error) {
 		console.log(error);
 	}
@@ -86,10 +97,26 @@ router.get('/:userID', cors(), async (req, res) => {
 router.post('/:userID', cors(), async (req, res) => {
 	try {
 		const { userID } = req.params;
+		let userRole;
+		await User.find().then((users) => {
+			users.forEach((user) => {
+				if (user.userID == userID) {
+					userRole = user.userRol;
+				}
+			});
+		});
 		const filter = { userID: userID, checkOutPlace: '' };
+		const recordFilter = await Record.find({
+			userRol: userRole,
+			checkOutTime: '',
+		}).sort({ checkInTime: -1 });
+
+		const usersAfter = recordFilter.length - 1;
+
 		const update = {
 			checkOutPlace: req.body.checkOutPlace,
 			checkOutTime: req.body.checkOutTime,
+			usersAfter: usersAfter,
 		};
 		const records = await Record.findOneAndUpdate(filter, update);
 		res.json(records);
@@ -172,9 +199,34 @@ router.post('/update/:userID', cors(), async (req, res) => {
 
 router.post('/', cors(), async (req, res) => {
 	try {
-		const newUser = new Record(req.body);
-		const records = await newUser.save();
-		res.json(records);
+		let userRole;
+		await User.find().then((users) => {
+			users.forEach((user) => {
+				if (user.userID == req.body.userID) {
+					userRole = user.userRol;
+				}
+			});
+		});
+
+		const records = await Record.find({
+			userRol: userRole,
+			checkOutTime: '',
+		});
+		const usrBefore = records.length + 1;
+
+		const newUser = new Record({
+			userID: req.body.userID,
+			userRol: userRole,
+			checkInPlace: req.body.checkInPlace,
+			checkInTime: req.body.checkInTime,
+			checkOutPlace: req.body.checkOutPlace,
+			checkOutTime: req.body.checkOutTime,
+			usersBefore: usrBefore,
+			records: req.body.records,
+		});
+
+		const recordsT = await newUser.save();
+		res.json(recordsT);
 		req.io.sockets.emit('newUser');
 	} catch (error) {
 		console.log(error);

@@ -8,6 +8,8 @@ const RecordSchema = new Schema({
 	checkInTime: { type: Date, required: true, trim: true },
 	checkOutPlace: { type: String, trim: true },
 	checkOutTime: { type: Date, trim: true },
+	usersAfter: { type: Number, trim: true },
+	usersBefore: { type: Number, trim: true },
 	records: [
 		{
 			recordInPlace: { type: String, trim: true },
