@@ -470,7 +470,7 @@ const Dashboard = () => {
                               <p>
                                 {data.name} {data.lastname}
                               </p>
-                              <p>{data.email.toLowerCase()}</p>
+                              {data.email !== undefined ? <p>{data.email.toLowerCase()}</p> : <></>}
                             </div>
                           </CCol>
                         </CRow>
