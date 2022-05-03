@@ -53,23 +53,29 @@ const RTChart = () => {
 
   const countUsersIn = () => {
     let datesStu = []
+    let datesRes = []
     let datesTea = []
     let datesInv = []
     recordsAll.forEach((record) => {
       return userData.forEach((userD) => {
         if (userD.userID === record.userID) {
           if (record.checkOutTime == null) {
-            if (userD.userRol === 'Alumno' || userD.userRol === 'Residente') {
+            if (userD.userRol === 'Alumno') {
               datesStu.push([new Date(record.checkInTime).getTime(), record.usersBefore])
+            } else if (userD.userRol === 'Residente') {
+              datesRes.push([new Date(record.checkInTime).getTime(), record.usersBefore])
             } else if (userD.userRol === 'Maestro') {
               datesTea.push([new Date(record.checkInTime).getTime(), record.usersBefore])
             } else if (userD.userRol === 'Invitado') {
               datesInv.push([new Date(record.checkInTime).getTime(), record.usersBefore])
             }
           } else {
-            if (userD.userRol === 'Alumno' || userD.userRol === 'Residente') {
+            if (userD.userRol === 'Alumno') {
               datesStu.push([new Date(record.checkInTime).getTime(), record.usersBefore])
               datesStu.push([new Date(record.checkOutTime).getTime(), record.usersAfter])
+            } else if (userD.userRol === 'Residente') {
+              datesRes.push([new Date(record.checkInTime).getTime(), record.usersBefore])
+              datesRes.push([new Date(record.checkOutTime).getTime(), record.usersAfter])
             } else if (userD.userRol === 'Maestro') {
               datesTea.push([new Date(record.checkInTime).getTime(), record.usersBefore])
               datesTea.push([new Date(record.checkOutTime).getTime(), record.usersAfter])
@@ -82,19 +88,21 @@ const RTChart = () => {
       })
     })
     datesStu = removeDuplicates(datesStu)
+    datesRes = removeDuplicates(datesRes)
     datesTea = removeDuplicates(datesTea)
     datesInv = removeDuplicates(datesInv)
-    return { datesStu, datesTea, datesInv }
+    return { datesStu, datesRes, datesTea, datesInv }
   }
   const series = [
     { name: 'Alumnos', data: countUsersIn().datesStu },
+    { name: 'Residentes', data: countUsersIn().datesRes },
     { name: 'Maestros', data: countUsersIn().datesTea },
     { name: 'Invitados', data: countUsersIn().datesInv },
   ]
   const options = {
     chart: { id: 'trafficChart', type: 'line', height: 350 },
     stroke: { curve: 'stepline' },
-    colors: ['#008FFB', '#00DF43', '#CF1020'],
+    colors: ['#008FFB', '#ffa500', '#00DF43', '#CF1020'],
     dataLabels: { enabled: false },
     markers: { size: 0, style: 'hollow' },
     xaxis: { type: 'datetime', min: new Date().getTime(), tickAmount: 13 },
@@ -104,6 +112,7 @@ const RTChart = () => {
 
   const seriesRange = [
     { name: 'Alumnos', data: countUsersIn().datesStu },
+    { name: 'Residentes', data: countUsersIn().datesRes },
     { name: 'Maestros', data: countUsersIn().datesTea },
     { name: 'Invitados', data: countUsersIn().datesInv },
   ]
@@ -120,7 +129,7 @@ const RTChart = () => {
       },
     },
     stroke: { curve: 'stepline' },
-    colors: ['#008FFB', '#00DF43', '#CF1020'],
+    colors: ['#008FFB', '#ffa500', '#00DF43', '#CF1020'],
     fill: {
       type: 'gradient',
       gradient: { opacityFrom: 0.91, opacityTo: 0.1 },

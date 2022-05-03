@@ -67,31 +67,34 @@ const Traffic = () => {
 
   const countUsersIn = () => {
     let countStu = 0
+    let countRes = 0
     let countTea = 0
     let countInv = 0
     userData.forEach((userD) => {
       return recordsAll.forEach((record) => {
-        if (
-          userD.userID === record.userID &&
-          (userD.userRol === 'Alumno' || userD.userRol === 'Residente')
-        ) {
-          countStu++
-        } else if (userD.userID === record.userID && userD.userRol === 'Maestro') {
-          countTea++
-        } else if (userD.userID === record.userID && userD.userRol === 'Invitado') {
-          countInv++
+        if (userD.userID === record.userID) {
+          if (userD.userRol === 'Alumno') {
+            countStu++
+          } else if (userD.userRol === 'Residente') {
+            countRes++
+          } else if (userD.userRol === 'Maestro') {
+            countTea++
+          } else if (userD.userRol === 'Invitado') {
+            countInv++
+          }
         }
       })
     })
-    const totalUsers = countStu + countTea + countInv
-    return { countStu, countTea, countInv, totalUsers }
+    const totalUsers = countStu + countTea + countInv + countRes
+    return { countStu, countTea, countInv, totalUsers, countRes }
   }
 
   const countUsersPercent = () => {
     const stdPercent = (countUsersIn().countStu / countUsersIn().totalUsers) * 100
+    const resPercent = (countUsersIn().countRes / countUsersIn().totalUsers) * 100
     const teaPercent = (countUsersIn().countTea / countUsersIn().totalUsers) * 100
     const invPercent = (countUsersIn().countInv / countUsersIn().totalUsers) * 100
-    return { stdPercent, teaPercent, invPercent }
+    return { stdPercent, resPercent, teaPercent, invPercent }
   }
 
   const progressExample = [
@@ -100,6 +103,12 @@ const Traffic = () => {
       value: countUsersIn().countStu,
       percent: Math.floor(countUsersPercent().stdPercent),
       color: 'info',
+    },
+    {
+      title: 'Residentes',
+      value: countUsersIn().countRes,
+      percent: Math.floor(countUsersPercent().resPercent),
+      color: 'warning',
     },
     {
       title: 'Maestros',
@@ -155,7 +164,7 @@ const Traffic = () => {
           <RTChart />
         </CCardBody>
         <CCardFooter>
-          <CRow xs={{ cols: 1 }} md={{ cols: 3 }} className="text-center">
+          <CRow xs={{ cols: 1 }} md={{ cols: 4 }} className="text-center">
             {progressExample.map((item, index) => (
               <CCol className="mb-sm-2 mb-0" key={index}>
                 <div className="text-medium-emphasis">{item.title}</div>
@@ -184,7 +193,7 @@ const Traffic = () => {
                         <p>{list.properties.name}</p>
                       </CCol>
                       <CCol lg="auto">
-                        <p>{getPlacePercent(list.properties.name).percentPlace}%</p>
+                        <p>{Math.floor(getPlacePercent(list.properties.name).percentPlace)}%</p>
                       </CCol>
                     </CRow>
 
