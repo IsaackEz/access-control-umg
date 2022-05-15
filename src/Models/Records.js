@@ -15,6 +15,8 @@ const RecordSchema = new Schema({
 			recordInPlace: { type: String, trim: true },
 			recordInTime: { type: Date, trim: true },
 			recordOutTime: { type: Date, trim: true },
+			usersAfter: { type: Number, trim: true },
+			usersBefore: { type: Number, trim: true },
 		},
 	],
 });

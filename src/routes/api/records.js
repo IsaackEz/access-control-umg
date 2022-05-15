@@ -128,18 +128,43 @@ router.post('/:userID', cors(), async (req, res) => {
 
 router.post('/update/:userID', cors(), async (req, res) => {
 	try {
+		let count = 0;
 		const { userID } = req.params;
+		let userRole;
+		await User.find().then((users) => {
+			users.forEach((user) => {
+				if (user.userID == userID) {
+					userRole = user.userRol;
+				}
+			});
+		});
+		const recordFilter = await Record.find({
+			userRol: userRole,
+			checkOutTime: '',
+		}).sort({ checkInTime: -1 });
+		recordFilter.forEach((record) => {
+			record.records.forEach((recordIn) => {
+				if (recordIn.recordInPlace == req.body.records[0].recordInPlace) {
+					count++;
+				}
+			});
+		});
+		const usersBefore = count + 1;
+
+		const usersAfter = count - 1;
 		const filter = { userID: userID, checkOutPlace: '' };
 		const filterOut = {
 			userID: userID,
 			'records.recordOutTime': '',
 		};
+		console.log(usersBefore);
 		const firstEntry = {
 			$set: {
 				records: {
 					recordInPlace: req.body.records[0].recordInPlace,
 					recordInTime: req.body.records[0].recordInTime,
 					recordOutTime: null,
+					usersBefore: usersBefore,
 				},
 			},
 		};
@@ -147,6 +172,7 @@ router.post('/update/:userID', cors(), async (req, res) => {
 		const firstOut = {
 			$set: {
 				'records.$.recordOutTime': req.body.records[0].recordOutTime,
+				'records.$.usersAfter': usersAfter,
 			},
 		};
 
