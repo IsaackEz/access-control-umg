@@ -363,7 +363,9 @@ const Traffic = () => {
                 <CCol sm={5}>
                   <h4 id="traffic" className="card-title mb-0">
                     Trafico en{' '}
-                    {onselect.name === 'Residencias' || 'Puerta Principal' || 'C. Montemorelos'
+                    {onselect.name === 'Residencias' ||
+                    onselect.name === 'Puerta Principal' ||
+                    onselect.name === 'C. Montemorelos'
                       ? 'UMG'
                       : onselect.name}
                   </h4>
