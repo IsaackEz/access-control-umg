@@ -242,7 +242,8 @@ const Dashboard = () => {
       userData.forEach((userD) => {
         if (userD.userID === record.userID) {
           if (userD.userRol === 'Residente' || userD.userRol === 'Alumno') {
-            let d = new Date(record.checkInTime)
+            let d = new Date(record.checkInTime).getTime() + 18000000
+            d = new Date(d)
             if (weekday[d.getDay()] === 'Monday') {
               countMondaySt++
             } else if (weekday[d.getDay()] === 'Tuesday') {
@@ -259,7 +260,8 @@ const Dashboard = () => {
               countSundaySt++
             }
           } else if (userD.userRol === 'Maestro') {
-            let d = new Date(record.checkInTime)
+            let d = new Date(record.checkInTime).getTime() + 18000000
+            d = new Date(d)
             if (weekday[d.getDay()] === 'Monday') {
               countMondayTea++
             } else if (weekday[d.getDay()] === 'Tuesday') {
@@ -493,7 +495,9 @@ const Dashboard = () => {
                                           <TimePicker
                                             className="dateCheckIn"
                                             name="checkInTime"
-                                            value={new Date(record.checkInTime)}
+                                            value={
+                                              new Date(record.checkInTime).getTime() + 18000000
+                                            }
                                             views="year"
                                             readOnly={true}
                                           />
@@ -515,7 +519,11 @@ const Dashboard = () => {
                                               >
                                                 <TimePicker
                                                   name="recordInTime"
-                                                  value={new Date(record.records[i].recordInTime)}
+                                                  value={
+                                                    new Date(
+                                                      record.records[i].recordInTime,
+                                                    ).getTime() + 18000000
+                                                  }
                                                   readOnly={true}
                                                 />
                                               </MuiPickersUtilsProvider>
@@ -531,7 +539,9 @@ const Dashboard = () => {
                                                     id="checkOutTime"
                                                     name="recordOutTime"
                                                     value={
-                                                      new Date(record.records[i].recordOutTime)
+                                                      new Date(
+                                                        record.records[i].recordOutTime,
+                                                      ).getTime() + 18000000
                                                     }
                                                     readOnly={true}
                                                   />
