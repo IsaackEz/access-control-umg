@@ -157,7 +157,6 @@ router.post('/update/:userID', cors(), async (req, res) => {
 			userID: userID,
 			'records.recordOutTime': '',
 		};
-		console.log(usersBefore);
 		const firstEntry = {
 			$set: {
 				records: {
