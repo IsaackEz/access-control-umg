@@ -217,34 +217,74 @@ const Traffic = () => {
               }
             }
           } else {
-            record.records.forEach((recordsIn) => {
-              if (recordsIn.recordOutTime == null && recordsIn.recordInTime != null) {
-                if (userD.userRol === 'Alumno') {
-                  datesStu.push([new Date(recordsIn.recordInTime).getTime(), recordsIn.usersBefore])
-                } else if (userD.userRol === 'Residente') {
-                  datesRes.push([new Date(recordsIn.recordInTime).getTime(), recordsIn.usersBefore])
-                } else if (userD.userRol === 'Maestro') {
-                  datesTea.push([new Date(recordsIn.recordInTime).getTime(), recordsIn.usersBefore])
-                } else if (userD.userRol === 'Invitado') {
-                  datesInv.push([new Date(recordsIn.recordInTime).getTime(), recordsIn.usersBefore])
+            record.records
+              .filter((value) => {
+                if (place === value.recordInPlace) return value
+              })
+              .forEach((recordsIn) => {
+                if (recordsIn.recordOutTime == null && recordsIn.recordInTime != null) {
+                  if (userD.userRol === 'Alumno') {
+                    datesStu.push([
+                      new Date(recordsIn.recordInTime).getTime(),
+                      recordsIn.usersBefore,
+                    ])
+                  } else if (userD.userRol === 'Residente') {
+                    datesRes.push([
+                      new Date(recordsIn.recordInTime).getTime(),
+                      recordsIn.usersBefore,
+                    ])
+                  } else if (userD.userRol === 'Maestro') {
+                    datesTea.push([
+                      new Date(recordsIn.recordInTime).getTime(),
+                      recordsIn.usersBefore,
+                    ])
+                  } else if (userD.userRol === 'Invitado') {
+                    datesInv.push([
+                      new Date(recordsIn.recordInTime).getTime(),
+                      recordsIn.usersBefore,
+                    ])
+                  }
+                } else if (recordsIn.recordOutTime != null) {
+                  if (userD.userRol === 'Alumno') {
+                    datesStu.push([
+                      new Date(recordsIn.recordInTime).getTime(),
+                      recordsIn.usersBefore,
+                    ])
+                    datesStu.push([
+                      new Date(recordsIn.recordOutTime).getTime(),
+                      recordsIn.usersAfter,
+                    ])
+                  } else if (userD.userRol === 'Residente') {
+                    datesRes.push([
+                      new Date(recordsIn.recordInTime).getTime(),
+                      recordsIn.usersBefore,
+                    ])
+                    console.log(datesRes)
+                    datesRes.push([
+                      new Date(recordsIn.recordOutTime).getTime(),
+                      recordsIn.usersAfter,
+                    ])
+                  } else if (userD.userRol === 'Maestro') {
+                    datesTea.push([
+                      new Date(recordsIn.recordInTime).getTime(),
+                      recordsIn.usersBefore,
+                    ])
+                    datesTea.push([
+                      new Date(recordsIn.recordOutTime).getTime(),
+                      recordsIn.usersAfter,
+                    ])
+                  } else if (userD.userRol === 'Invitado') {
+                    datesInv.push([
+                      new Date(recordsIn.recordInTime).getTime(),
+                      recordsIn.usersBefore,
+                    ])
+                    datesInv.push([
+                      new Date(recordsIn.recordOutTime).getTime(),
+                      recordsIn.usersAfter,
+                    ])
+                  }
                 }
-              } else if (recordsIn.recordOutTime != null) {
-                if (userD.userRol === 'Alumno') {
-                  datesStu.push([new Date(recordsIn.recordInTime).getTime(), recordsIn.usersBefore])
-                  datesStu.push([new Date(recordsIn.recordOutTime).getTime(), recordsIn.usersAfter])
-                } else if (userD.userRol === 'Residente') {
-                  datesRes.push([new Date(recordsIn.recordInTime).getTime(), recordsIn.usersBefore])
-                  console.log(datesRes)
-                  datesRes.push([new Date(recordsIn.recordOutTime).getTime(), recordsIn.usersAfter])
-                } else if (userD.userRol === 'Maestro') {
-                  datesTea.push([new Date(recordsIn.recordInTime).getTime(), recordsIn.usersBefore])
-                  datesTea.push([new Date(recordsIn.recordOutTime).getTime(), recordsIn.usersAfter])
-                } else if (userD.userRol === 'Invitado') {
-                  datesInv.push([new Date(recordsIn.recordInTime).getTime(), recordsIn.usersBefore])
-                  datesInv.push([new Date(recordsIn.recordOutTime).getTime(), recordsIn.usersAfter])
-                }
-              }
-            })
+              })
           }
         }
       })
@@ -451,38 +491,42 @@ const Traffic = () => {
         <CCard className="mb-4">
           <CCardHeader>Flujo de Accesos</CCardHeader>
           <CCardBody>
-            {geoJSON.features.map((list, key) => {
-              return (
-                <div
-                  className="userItem mb-3"
-                  key={key}
-                  onClick={() => {
-                    setOnselect({ name: list.properties.name })
-                  }}
-                >
-                  <div className="userItemLoc mt-3">
-                    <CRow>
-                      <CCol lg={1}>
-                        <p>{getPlacePercent(list.properties.name).countPlace}</p>
-                      </CCol>
-                      <CCol>
-                        <p>{list.properties.name}</p>
-                      </CCol>
-                      <CCol lg="auto">
-                        <p>{Math.floor(getPlacePercent(list.properties.name).percentPlace)}%</p>
-                      </CCol>
-                    </CRow>
+            {geoJSON.features
+              .filter((item) => {
+                if (item.properties.name !== 'UMG') return item
+              })
+              .map((list, key) => {
+                return (
+                  <div
+                    className="userItem mb-3"
+                    key={key}
+                    onClick={() => {
+                      setOnselect({ name: list.properties.name })
+                    }}
+                  >
+                    <div className="userItemLoc mt-3">
+                      <CRow>
+                        <CCol lg={1}>
+                          <p>{getPlacePercent(list.properties.name).countPlace}</p>
+                        </CCol>
+                        <CCol>
+                          <p>{list.properties.name}</p>
+                        </CCol>
+                        <CCol lg="auto">
+                          <p>{Math.floor(getPlacePercent(list.properties.name).percentPlace)}%</p>
+                        </CCol>
+                      </CRow>
 
-                    <CProgress height={10} className="mb-1">
-                      <CProgressBar
-                        color={getColorPlace(list.properties.name)}
-                        value={getPlacePercent(list.properties.name).percentPlace}
-                      ></CProgressBar>
-                    </CProgress>
+                      <CProgress height={10} className="mb-1">
+                        <CProgressBar
+                          color={getColorPlace(list.properties.name)}
+                          value={getPlacePercent(list.properties.name).percentPlace}
+                        ></CProgressBar>
+                      </CProgress>
+                    </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+              })}
           </CCardBody>
         </CCard>
       </CRow>

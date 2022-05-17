@@ -144,7 +144,10 @@ router.post('/update/:userID', cors(), async (req, res) => {
 		}).sort({ checkInTime: -1 });
 		recordFilter.forEach((record) => {
 			record.records.forEach((recordIn) => {
-				if (recordIn.recordInPlace == req.body.records[0].recordInPlace) {
+				if (
+					recordIn.recordOutTime === null &&
+					recordIn.recordInPlace == req.body.records[0].recordInPlace
+				) {
 					count++;
 				}
 			});
@@ -181,6 +184,7 @@ router.post('/update/:userID', cors(), async (req, res) => {
 					recordInPlace: req.body.records[0].recordInPlace,
 					recordInTime: req.body.records[0].recordInTime,
 					recordOutTime: null,
+					usersBefore: usersBefore,
 				},
 			},
 		};
