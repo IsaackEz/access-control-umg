@@ -58,6 +58,15 @@
 .userTextLabel {
   margin-bottom: 0;
 }
+.userTextLabelTrack {
+  margin: 0;
+  text-align: center;
+}
+.labelRolTrack {
+  color: rgb(119, 119, 119);
+  margin: 0;
+  text-align: center;
+}
 .nUserLocation {
   color: rgb(161, 161, 161);
 }
@@ -199,10 +208,21 @@
   width: 4rem;
   height: 4rem;
 }
+.imgUserStatTrack {
+  width: 5.5rem;
+  height: 4rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
 
 .widget-stats {
   background-color: #ebf2f7;
   border-radius: 8px;
+}
+.widget-statsTrack {
+  background-color: #ebf2f7;
+  cursor: pointer;
 }
 
 .labelRol {
