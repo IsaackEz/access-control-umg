@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
 import {
@@ -11,8 +11,6 @@ import {
   CModalTitle,
   CRow,
 } from '@coreui/react'
-import DataTable from 'react-data-table-component'
-import { io } from 'socket.io-client'
 import student from 'src/assets/images/user/student.png'
 import teacher from 'src/assets/images/user/teacher.png'
 import guest from 'src/assets/images/user/guest.png'
@@ -20,11 +18,9 @@ import foreign from 'src/assets/images/user/foreign.png'
 
 const Tables = () => {
   const [userData, setUserData] = useState([])
-
+  const [onselect, setOnselect] = useState({})
   const [visible, setVisible] = useState(false)
   const [recordsAll, setRecordsAll] = useState([])
-
-  const socket = useRef(io.connect(process.env.REACT_APP_IO))
 
   const loadUserData = async () => {
     await axios
@@ -51,11 +47,51 @@ const Tables = () => {
   useEffect(() => {
     loadAllRecords()
     loadUserData()
-    socket.current.on('newUser', () => {
-      loadAllRecords()
-      loadUserData()
-    })
   }, [])
+
+  const userContact = (infUserID) => {
+    let placesInfected = []
+    let recordsIn = []
+    recordsAll.forEach((records) => {
+      if (
+        records.userID === infUserID &&
+        records.records[records.records.length - 1].recordInPlace !== ''
+      ) {
+        placesInfected = { records: records.records, userID: records.userID }
+      }
+    })
+    if (placesInfected.records !== undefined) {
+      placesInfected.records.forEach((placeInf) => {
+        recordsAll.forEach((records) => {
+          records.records.forEach((record) => {
+            if (placeInf.recordInPlace === record.recordInPlace) {
+              const placeInfOutDate =
+                new Date(record.recordOutTime).getDate() +
+                '-' +
+                new Date(record.recordOutTime).getMonth() +
+                '-' +
+                new Date(record.recordOutTime).getFullYear()
+              const recordOutDate =
+                new Date(record.recordOutTime).getDate() +
+                '-' +
+                new Date(record.recordOutTime).getMonth() +
+                '-' +
+                new Date(record.recordOutTime).getFullYear()
+              if (
+                placeInfOutDate === recordOutDate &&
+                new Date(record.recordInTime).getTime() <
+                  new Date(placeInf.recordOutTime).getTime() &&
+                new Date(placeInf.recordInTime).getTime() < new Date(record.recordOutTime).getTime()
+              ) {
+                recordsIn.push({ record: record, userID: records.userID })
+              }
+            }
+          })
+        })
+      })
+    }
+    return { recordsIn }
+  }
 
   return (
     <CCard className="mb-4">
@@ -72,6 +108,8 @@ const Tables = () => {
                       className="widget-statsTrack p-1"
                       onClick={() => {
                         setVisible(!visible)
+                        setOnselect(user)
+                        userContact(user.userID)
                       }}
                     >
                       <CRow>
@@ -97,27 +135,61 @@ const Tables = () => {
                       </CRow>
                     </div>
                   </CCardBody>
+                  <CModal
+                    backdrop="static"
+                    alignment="center"
+                    visible={visible}
+                    onClose={() => {
+                      setVisible(false)
+                    }}
+                  >
+                    <CModalHeader>
+                      <CModalTitle>Contactos</CModalTitle>
+                    </CModalHeader>
+                    <CModalBody>
+                      {onselect.name && (
+                        <div>
+                          <p>
+                            <strong>{onselect.name + ' ' + onselect.lastname}</strong> ha estado en
+                            contacto con:
+                          </p>
+                          {userContact(onselect.userID).recordsIn.map((item, index) => {
+                            return userData.map((user) => {
+                              if (user.userID === item.userID) {
+                                return (
+                                  <div key={index}>
+                                    {onselect.name !== user.name ? (
+                                      <>
+                                        <h5>{user.name + ' ' + user.lastname}</h5>
+                                        <p>
+                                          {'En el area: ' +
+                                            item.record.recordInPlace +
+                                            ' el dia ' +
+                                            new Date(item.record.recordOutTime).getDate() +
+                                            '-' +
+                                            new Date(item.record.recordOutTime).getMonth() +
+                                            '-' +
+                                            new Date(item.record.recordOutTime).getFullYear()}
+                                        </p>
+                                      </>
+                                    ) : (
+                                      <></>
+                                    )}
+                                  </div>
+                                )
+                              }
+                            })
+                          })}
+                        </div>
+                      )}
+                    </CModalBody>
+                  </CModal>
                 </CCol>
               )
             }
           })}
         </CRow>
       </CCardBody>
-      <CModal
-        backdrop="static"
-        alignment="center"
-        visible={visible}
-        onClose={() => {
-          setVisible(false)
-        }}
-      >
-        <CModalHeader>
-          <CModalTitle>Ajustes</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <p>oks</p>
-        </CModalBody>
-      </CModal>
     </CCard>
   )
 }
