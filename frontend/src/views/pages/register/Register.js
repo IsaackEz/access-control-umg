@@ -64,9 +64,8 @@ const Register = () => {
     e.preventDefault()
     try {
       const URL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/signup'
-      const { data: res } = await axios.post(URL, data)
+      await axios.post(URL, data)
       navigate('/usuarios')
-      console.log(res.message)
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message)
