@@ -140,7 +140,7 @@ router.post('/update/:userID', cors(), async (req, res) => {
 		});
 		const recordFilter = await Record.find({
 			userRol: userRole,
-			checkOutTime: '',
+			checkOutTime: null,
 		}).sort({ checkInTime: -1 });
 		recordFilter.forEach((record) => {
 			record.records.forEach((recordIn) => {
@@ -158,7 +158,8 @@ router.post('/update/:userID', cors(), async (req, res) => {
 		const filter = { userID: userID, checkOutPlace: '' };
 		const filterOut = {
 			userID: userID,
-			'records.recordOutTime': '',
+			'records.recordInPlace': req.body.records[0].recordInPlace,
+			'records.recordOutTime': null,
 		};
 		const firstEntry = {
 			$set: {
@@ -192,7 +193,7 @@ router.post('/update/:userID', cors(), async (req, res) => {
 		records = [];
 		await Record.find({
 			userID: userID,
-			checkOutTime: '',
+			checkOutTime: null,
 		}).then((users) => {
 			users.forEach((user) => {
 				records.push({
@@ -201,7 +202,6 @@ router.post('/update/:userID', cors(), async (req, res) => {
 				});
 			});
 		});
-
 		if (records[0].records.recordInPlace == '') {
 			const records = await Record.findOneAndUpdate(filter, firstEntry);
 			res.json(records);
