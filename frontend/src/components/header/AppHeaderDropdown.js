@@ -218,7 +218,6 @@ const AppHeaderDropdown = () => {
       const URL = process.env.REACT_APP_AXIOS_BASE_URL + '/admin/signup'
       const { data: res } = await axios.post(URL, data)
       navigate('/usuarios')
-      console.log(res.message)
     } catch (error) {
       if (error.response && error.response.status >= 400 && error.response.status <= 500) {
         setError(error.response.data.message)
@@ -232,16 +231,16 @@ const AppHeaderDropdown = () => {
         <CAvatar src={admin} size="md" /> {adminInfo.username}
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>
-        <CDropdownItem component="button">
+        {/*<CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>
+         <CDropdownItem component="button">
           <CIcon icon={cilBell} className="me-2" />
           Notificaciones
           <CBadge color="info" className="ms-2">
             42
           </CBadge>
-        </CDropdownItem>
+        </CDropdownItem> */}
 
-        <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
+        <CDropdownHeader className="bg-light fw-semibold py-2">Ajustes</CDropdownHeader>
         <CDropdownItem
           component="button"
           onClick={() => {
