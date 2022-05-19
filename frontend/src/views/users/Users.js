@@ -110,32 +110,32 @@ const Tables = () => {
       },
       sortable: true,
     },
-    {
-      name: '',
-      selector: (row) => {
-        return (
-          <CRow>
-            <CCol>
-              <CButton
-                onClick={() => setVisible(!visible)}
-                className="btn btn-sm"
-                type="button"
-                color="primary"
-                variant="outline"
-              >
-                Editar
-              </CButton>
-            </CCol>
-            <CCol>
-              <CButton className="btn btn-sm" type="button" color="danger" variant="outline">
-                Eliminar
-              </CButton>
-            </CCol>
-          </CRow>
-        )
-      },
-      sortable: true,
-    },
+    // {
+    //   name: '',
+    //   selector: (row) => {
+    //     return (
+    //       <CRow>
+    //         <CCol>
+    //           <CButton
+    //             onClick={() => setVisible(!visible)}
+    //             className="btn btn-sm"
+    //             type="button"
+    //             color="primary"
+    //             variant="outline"
+    //           >
+    //             Editar
+    //           </CButton>
+    //         </CCol>
+    //         <CCol>
+    //           <CButton className="btn btn-sm" type="button" color="danger" variant="outline">
+    //             Eliminar
+    //           </CButton>
+    //         </CCol>
+    //       </CRow>
+    //     )
+    //   },
+    //   sortable: true,
+    // },
   ]
 
   const getNames = () => {
