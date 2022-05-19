@@ -17,25 +17,14 @@ import {
 } from '@coreui/react'
 
 const Traffic = () => {
-  const [records, setRecords] = useState([])
   const [recordsAll, setRecordsAll] = useState([])
   const [userData, setUserData] = useState([])
   const [onselect, setOnselect] = useState([])
-  const [user, setUser] = useState([])
   const socket = useRef(io.connect(process.env.REACT_APP_IO))
-  const loadUsers = async () => {
-    await axios
-      .get('https://api.cinic.xyz/api/records/lastlocation')
-      .then((res) => {
-        setUser(res.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }
+
   const loadUserData = async () => {
     await axios
-      .get('https://api.cinic.xyz/api/users')
+      .get(process.env.REACT_APP_AXIOS_BASE_URL + '/api/users')
       .then((res) => {
         setUserData(res.data)
       })
@@ -44,20 +33,9 @@ const Traffic = () => {
       })
   }
 
-  const loadRecords = async () => {
-    await axios
-      .get('https://api.cinic.xyz/api/records/filter')
-      .then((res) => {
-        setRecords(res.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }
-
   const loadAllRecords = async () => {
     await axios
-      .get('https://api.cinic.xyz/api/records')
+      .get(process.env.REACT_APP_AXIOS_BASE_URL + '/api/records')
       .then((res) => {
         setRecordsAll(res.data)
       })
@@ -67,15 +45,11 @@ const Traffic = () => {
   }
 
   useEffect(() => {
-    loadRecords()
     loadUserData()
     loadAllRecords()
-    loadUsers()
     socket.current.on('newUser', () => {
-      loadRecords()
       loadUserData()
       loadAllRecords()
-      loadUsers()
     })
   }, [])
 
@@ -178,7 +152,6 @@ const Traffic = () => {
   }
 
   const countAllUsersInOut = (place) => {
-    console.log(place)
     let datesStu = []
     let datesRes = []
     let datesTea = []
@@ -259,7 +232,6 @@ const Traffic = () => {
                       new Date(recordsIn.recordInTime).getTime(),
                       recordsIn.usersBefore,
                     ])
-                    console.log(datesRes)
                     datesRes.push([
                       new Date(recordsIn.recordOutTime).getTime(),
                       recordsIn.usersAfter,
