@@ -16,7 +16,7 @@ import teacher from 'src/assets/images/user/teacher.png'
 import guest from 'src/assets/images/user/guest.png'
 import foreign from 'src/assets/images/user/foreign.png'
 
-const Tables = () => {
+const Tracking = () => {
   const [userData, setUserData] = useState([])
   const [onselect, setOnselect] = useState({})
   const [visible, setVisible] = useState(false)
@@ -24,7 +24,7 @@ const Tables = () => {
 
   const loadUserData = async () => {
     await axios
-      .get('https://api.cinic.xyz/api/users')
+      .get(process.env.REACT_APP_AXIOS_BASE_URL + '/api/users')
       .then((res) => {
         setUserData(res.data)
       })
@@ -35,7 +35,7 @@ const Tables = () => {
 
   const loadAllRecords = async () => {
     await axios
-      .get('https://api.cinic.xyz/api/records')
+      .get(process.env.REACT_APP_AXIOS_BASE_URL + '/api/records')
       .then((res) => {
         setRecordsAll(res.data)
       })
@@ -149,29 +149,38 @@ const Tables = () => {
                     <CModalBody>
                       {onselect.name && (
                         <div>
-                          <p>
-                            <strong>{onselect.name + ' ' + onselect.lastname}</strong> ha estado en
-                            contacto con:
-                          </p>
+                          {userContact(onselect.userID).recordsIn.length !== 0 ? (
+                            <p>
+                              <strong>{onselect.name + ' ' + onselect.lastname}</strong> ha estado
+                              en contacto con:
+                            </p>
+                          ) : (
+                            <p>
+                              <strong>{onselect.name + ' ' + onselect.lastname}</strong> por el
+                              momento no ha tenido contactos.
+                            </p>
+                          )}
+
                           {userContact(onselect.userID).recordsIn.map((item, index) => {
                             return userData.map((user) => {
                               if (user.userID === item.userID) {
                                 return (
                                   <div key={index}>
                                     {onselect.name !== user.name ? (
-                                      <>
+                                      <div className="infectedPP">
                                         <h5>{user.name + ' ' + user.lastname}</h5>
                                         <p>
-                                          {'En el area: ' +
+                                          {'En ' +
                                             item.record.recordInPlace +
                                             ' el dia ' +
                                             new Date(item.record.recordOutTime).getDate() +
-                                            '-' +
+                                            '/' +
                                             new Date(item.record.recordOutTime).getMonth() +
-                                            '-' +
+                                            '/' +
                                             new Date(item.record.recordOutTime).getFullYear()}
                                         </p>
-                                      </>
+                                        <hr className="mt-0" />
+                                      </div>
                                     ) : (
                                       <></>
                                     )}
@@ -194,4 +203,4 @@ const Tables = () => {
   )
 }
 
-export default Tables
+export default Tracking
