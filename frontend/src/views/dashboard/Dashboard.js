@@ -32,7 +32,7 @@ const Dashboard = () => {
 
   const loadUsers = async () => {
     await axios
-      .get('https://api.cinic.xyz/api/records/lastlocation')
+      .get(process.env.REACT_APP_AXIOS_BASE_URL + '/api/records/lastlocation')
       .then((res) => {
         setUser(res.data)
       })
@@ -43,7 +43,7 @@ const Dashboard = () => {
 
   const loadUserData = async () => {
     await axios
-      .get('https://api.cinic.xyz/api/users')
+      .get(process.env.REACT_APP_AXIOS_BASE_URL + '/api/users')
       .then((res) => {
         setUserData(res.data)
       })
@@ -54,7 +54,7 @@ const Dashboard = () => {
 
   const loadRecords = async () => {
     await axios
-      .get('https://api.cinic.xyz/api/records/filter')
+      .get(process.env.REACT_APP_AXIOS_BASE_URL + '/api/records/filter')
       .then((res) => {
         setRecords(res.data)
       })
@@ -64,7 +64,7 @@ const Dashboard = () => {
   }
   const loadAllRecords = async () => {
     await axios
-      .get('https://api.cinic.xyz/api/records')
+      .get(process.env.REACT_APP_AXIOS_BASE_URL + '/api/records')
       .then((res) => {
         setRecordsAll(res.data)
       })
@@ -729,9 +729,6 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-      </CRow>
-      <CRow className="ms-1">
-        <Records />
       </CRow>
       <CRow>
         <CCol lg={8}>
